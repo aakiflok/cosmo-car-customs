@@ -10,13 +10,9 @@ export default function PageTransition({ children }: { children: React.ReactNode
     const el = ref.current;
     if (!el) return;
     el.classList.remove('page-enter');
-    void el.offsetWidth; // reflow
+    void el.offsetWidth;
     el.classList.add('page-enter');
   }, [pathname]);
 
-  return (
-    <div ref={ref} className="page-enter">
-      {children}
-    </div>
-  );
+  return <div ref={ref} className="page-enter">{children}</div>;
 }
