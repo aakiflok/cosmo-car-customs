@@ -1,26 +1,55 @@
+'use client';
+import type { Metadata } from 'next';
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { SERVICES } from '@/lib/data';
 
+const ALL_FAQS = SERVICES.flatMap(s => s.faqs.map(f => ({ ...f, service: s.name })));
+
 export default function FAQPage() {
-  const allFaqs = SERVICES.flatMap(s => s.faqs.map(f => ({ ...f, service: s.name })));
+  const [open, setOpen] = useState<number | null>(null);
   return (
-    <div className="min-h-screen bg-canvas px-4 pb-24 pt-28 md:px-8">
-      <div className="mx-auto max-w-[900px]">
-        <div className="mb-16">
-          <div className="label-badge mb-3 text-white/40">FAQ</div>
-          <h1 className="display-xl mb-5 text-white">Common questions, direct answers.</h1>
-        </div>
-        <div className="divide-y divide-[#303030]">
-          {allFaqs.map((f, i) => (
-            <div key={i} className="py-8">
-              <div className="label-badge mb-3 text-rossa">{f.service}</div>
-              <h2 className="mb-3 text-[18px] font-medium text-white">{f.q}</h2>
-              <p className="text-sm leading-7 text-white/65">{f.a}</p>
+    <div className="min-h-screen bg-canvas px-4 pb-[96px] pt-[128px] md:px-8">
+      <div className="mx-auto max-w-[860px]">
+        <div className="label-badge mb-[8px] text-white/40">FAQ</div>
+        <h1 className="display-xl mb-[64px] text-white">Common questions, direct answers.</h1>
+
+        {/* Accordion */}
+        <div className="divide-y divide-[#303030]" role="list">
+          {ALL_FAQS.map((faq, i) => (
+            <div key={i} role="listitem">
+              <button
+                className="flex w-full items-center justify-between gap-4 py-[24px] text-left"
+                onClick={() => setOpen(open === i ? null : i)}
+                aria-expanded={open === i}
+                aria-controls={`faq-${i}`}
+              >
+                <div>
+                  <div className="label-badge mb-[4px] text-rossa">{faq.service}</div>
+                  <h2 className="text-[15px] font-medium text-white md:text-[17px]">{faq.q}</h2>
+                </div>
+                <ChevronDown
+                  size={18}
+                  className={`shrink-0 text-white/40 transition-transform duration-260 ${open === i ? 'rotate-180' : ''}`}
+                  aria-hidden="true"
+                />
+              </button>
+              <div
+                id={`faq-${i}`}
+                className={`accordion-body ${open === i ? 'open' : ''}`}
+              >
+                <div>
+                  <p className="pb-[24px] text-[14px] leading-7 text-white/62">{faq.a}</p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
-        <div className="mt-16 border-t border-[#303030] pt-12 text-center">
-          <p className="mb-6 text-[15px] text-white/60">Still have a question? Talk to our team directly.</p>
+
+        {/* CTA */}
+        <div className="mt-[64px] border-t border-[#303030] pt-[48px] text-center">
+          <p className="mb-[24px] text-[14px] text-white/55">Still have a question? Talk directly to our team.</p>
           <Link href="/contact" className="btn-primary">Contact Us</Link>
         </div>
       </div>

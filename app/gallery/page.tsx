@@ -1,4 +1,11 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Gallery — Before & After Vehicle Transformations',
+  description: 'Real before and after results from ceramic coating, paint correction, PPF, and detailing jobs at Cosmo Car Customs in Mississauga.',
+};
 
 const GALLERY = [
   { src:'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=900&q=80', label:'Ceramic Coating — BMW M4' },
@@ -13,23 +20,35 @@ const GALLERY = [
 
 export default function GalleryPage() {
   return (
-    <div className="min-h-screen bg-canvas px-4 pb-24 pt-28 md:px-8">
+    <div className="min-h-screen bg-canvas px-4 pb-[96px] pt-[96px] md:px-8">
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-14">
-          <div className="label-badge mb-3 text-white/40">Before &amp; after</div>
+        {/* Header */}
+        <div className="mb-[64px] max-w-[680px]">
+          <div className="label-badge mb-[8px] text-white/40">Before &amp; after</div>
           <h1 className="display-xl text-white">The work, documented.</h1>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {GALLERY.map(img => (
-            <div key={img.src} className="group relative overflow-hidden">
-              <div className="relative h-72">
-                <Image src={img.src} alt={img.label} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 768px) 100vw, 25vw" loading="lazy" />
+        {/* Grid: 1-up → 2-up → 4-up */}
+        <div className="grid gap-px bg-[#303030] sm:grid-cols-2 lg:grid-cols-4">
+          {GALLERY.map((img, i) => (
+            <figure key={img.src} className="group m-0">
+              <div className="relative overflow-hidden" style={{ aspectRatio: '3/4' }}>
+                <Image
+                  src={img.src}
+                  alt={img.label}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
+                  loading={i < 4 ? 'eager' : 'lazy'}
+                />
               </div>
-              <div className="border border-[#303030] bg-canvas p-4">
-                <div className="label-badge text-white/55">{img.label}</div>
-              </div>
-            </div>
+              <figcaption className="border border-t-0 border-[#303030] bg-canvas px-[16px] py-[12px]">
+                <div className="label-badge text-white/50">{img.label}</div>
+              </figcaption>
+            </figure>
           ))}
+        </div>
+        <div className="mt-[64px] text-center">
+          <Link href="/consultation" className="btn-primary">Book a Service</Link>
         </div>
       </div>
     </div>

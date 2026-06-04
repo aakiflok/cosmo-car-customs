@@ -5,25 +5,46 @@ import { SERVICES } from '@/lib/data';
 
 export default function ServicesGrid() {
   return (
-    <section id="services" className="bg-canvas px-4 py-24 md:px-8 md:py-28">
+    <section id="services" aria-labelledby="services-heading" className="bg-canvas px-4 py-[96px] md:px-8">
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-14 max-w-[720px] reveal-up">
-          <div className="label-badge mb-3 text-white/40">Signature services</div>
-          <h2 className="display-xl mb-5 text-white">Precision-led services built around your vehicle's specific protection needs.</h2>
-          <p className="text-[15px] leading-7 text-white/62">From paint correction to full ceramic and film packages — each service is a dedicated consultation-to-delivery process, not a drive-through wash.</p>
+        {/* Header */}
+        <div className="mb-[48px] max-w-[720px] reveal-up">
+          <div className="label-badge mb-[8px] text-white/40">Signature services</div>
+          <h2 id="services-heading" className="display-xl mb-[16px] text-white">
+            Precision-led services built around your vehicle's specific protection needs.
+          </h2>
+          <p className="text-[14px] leading-7 text-white/60 md:text-[15px]">
+            Each service is a dedicated consultation-to-delivery process — not a drive-through wash.
+          </p>
         </div>
-        <div className="grid gap-px bg-[#303030] md:grid-cols-2 xl:grid-cols-5">
-          {SERVICES.map(s => (
-            <Link key={s.slug} href={`/services/${s.slug}`} className="group bg-canvas block hover:bg-elevated transition-colors">
-              <div className="relative h-52 overflow-hidden">
-                <Image src={s.image} alt={s.name} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 768px) 100vw, 20vw" />
+
+        {/* Grid — 1-up → 2-up → 5-up */}
+        <div className="grid gap-px bg-[#303030] sm:grid-cols-2 xl:grid-cols-5">
+          {SERVICES.map((s, i) => (
+            <Link
+              key={s.slug}
+              href={`/services/${s.slug}`}
+              className="card-hover group block bg-canvas"
+              aria-label={`${s.name} — ${s.tagline}`}
+            >
+              {/* Image */}
+              <div className="relative overflow-hidden" style={{ aspectRatio: '4/3' }}>
+                <Image
+                  src={s.image}
+                  alt={s.name}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width:640px) 100vw, (max-width:1280px) 50vw, 20vw"
+                  loading={i < 2 ? 'eager' : 'lazy'}
+                />
               </div>
-              <div className="p-6">
-                <div className="label-badge mb-2 text-white/35">{s.number}</div>
-                <h3 className="mb-2 text-[18px] font-semibold text-white">{s.name}</h3>
-                <p className="mb-4 text-sm leading-6 text-white/58">{s.tagline}</p>
+              {/* Body */}
+              <div className="p-[24px]">
+                <div className="label-badge mb-[8px] text-white/30">{s.number}</div>
+                <h3 className="text-title-md mb-[8px] text-white">{s.name}</h3>
+                <p className="mb-[16px] text-[13px] leading-6 text-white/55">{s.tagline}</p>
                 <div className="flex items-center gap-2 label-nav text-rossa">
-                  <span>Explore</span><ArrowRight size={13} />
+                  Explore <ArrowRight size={12} aria-hidden="true" />
                 </div>
               </div>
             </Link>
