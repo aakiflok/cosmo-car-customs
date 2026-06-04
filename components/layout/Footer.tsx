@@ -1,91 +1,45 @@
-import Link from 'next/link'
-import { Phone, MapPin, Instagram } from 'lucide-react'
+import Link from 'next/link';
+import { Phone, MapPin, Instagram } from 'lucide-react';
+import { BUSINESS, SERVICES } from '@/lib/data';
 
-const serviceLinks = [
-  { href: '/services/ceramic-coating',      label: 'Ceramic Coating' },
-  { href: '/services/paint-protection-film',label: 'Paint Protection Film' },
-  { href: '/services/paint-correction',     label: 'Paint Correction' },
-  { href: '/services/window-tinting',       label: 'Window Tinting' },
-  { href: '/services/car-detailing',        label: 'Car Detailing' },
-]
-
-const companyLinks = [
-  { href: '/about',        label: 'About the Studio' },
-  { href: '/gallery',      label: 'Gallery' },
-  { href: '/testimonials', label: 'Testimonials' },
-  { href: '/faq',          label: 'FAQ' },
-  { href: '/consultation', label: 'Book Consultation' },
-  { href: '/contact',      label: 'Contact' },
-]
-
-export function Footer() {
+export default function Footer() {
   return (
-    <footer className="divider bg-canvas px-4 py-16 md:px-8">
-      <div className="mx-auto max-w-editorial">
-        <div className="mb-12 grid gap-8 md:grid-cols-2 xl:grid-cols-4">
-          {/* Brand */}
-          <div>
-            <div className="mb-4 label-upper text-bodyText">Cosmo Car Customs</div>
-            <p className="max-w-[280px] text-sm leading-6 text-muted">
-              Premium vehicle detailing, ceramic coating, paint protection film, and paint correction in Mississauga and the GTA.
-            </p>
-            <div className="mt-5 flex flex-col gap-2">
-              <a href="tel:9059718186" className="flex items-center gap-2 text-sm text-bodyText hover:text-ink">
-                <Phone size={13} /> 905-971-8186
-              </a>
-              <a href="https://www.instagram.com/cosmocarcustoms/" target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-bodyText hover:text-ink">
-                <Instagram size={13} /> @cosmocarcustoms
-              </a>
-              <address className="flex items-start gap-2 text-sm not-italic text-bodyText">
-                <MapPin size={13} className="mt-0.5 shrink-0" />
-                1380 Cardiff Blvd Unit 9,<br />Mississauga, ON L5S 1P9
-              </address>
-            </div>
-          </div>
-
-          {/* Services */}
-          <div>
-            <div className="mb-4 label-upper text-bodyText">Services</div>
-            <ul className="space-y-2">
-              {serviceLinks.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-muted hover:text-ink">{l.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <div className="mb-4 label-upper text-bodyText">Studio</div>
-            <ul className="space-y-2">
-              {companyLinks.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-muted hover:text-ink">{l.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Trust */}
-          <div>
-            <div className="mb-4 label-upper text-bodyText">Why Cosmo</div>
-            <ul className="space-y-3 text-sm leading-6 text-muted">
-              <li>★ 4.9/5 across 250+ Google Reviews</li>
-              <li>5+ years of professional detailing expertise</li>
-              <li>Mississauga and GTA service area</li>
-              <li>Certified ceramic coating installer</li>
-              <li>SunTek window film certified installer</li>
-            </ul>
-          </div>
+    <footer className="border-t border-[#303030] bg-canvas px-4 py-16 md:px-8">
+      <div className="mx-auto grid max-w-[1280px] gap-10 md:grid-cols-2 lg:grid-cols-5">
+        <div className="lg:col-span-2">
+          <div className="label-cta mb-3 text-[13px] text-white">{BUSINESS.name}</div>
+          <div className="label-badge mb-5 text-white/45">{BUSINESS.tagline}</div>
+          <p className="max-w-[300px] text-sm leading-6 text-white/55">{BUSINESS.reviewCount} Google reviews · {BUSINESS.googleRating} rating · Mississauga and GTA.</p>
         </div>
-
-        <div className="divider pt-8 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <p className="text-xs text-muted">© {new Date().getFullYear()} Cosmo Car Customs. All rights reserved.</p>
-          <p className="text-xs text-muted">Mississauga, Ontario, Canada</p>
+        <div>
+          <div className="label-badge mb-5 text-white/40">Services</div>
+          <ul className="space-y-3">
+            {SERVICES.map(s => (
+              <li key={s.slug}><Link href={`/services/${s.slug}`} className="text-sm text-white/60 hover:text-white transition-colors">{s.name}</Link></li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <div className="label-badge mb-5 text-white/40">Company</div>
+          <ul className="space-y-3 text-sm">
+            {[['About','about'],['Gallery','gallery'],['Testimonials','testimonials'],['FAQ','faq'],['Contact','contact']].map(([l,h]) => (
+              <li key={h}><Link href={`/${h}`} className="text-white/60 hover:text-white transition-colors">{l}</Link></li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <div className="label-badge mb-5 text-white/40">Contact</div>
+          <ul className="space-y-4">
+            <li className="flex items-start gap-2 text-sm text-white/60"><Phone size={14} className="mt-0.5 shrink-0" /><a href={`tel:${BUSINESS.phone}`} className="hover:text-white">{BUSINESS.phone}</a></li>
+            <li className="flex items-start gap-2 text-sm text-white/60"><MapPin size={14} className="mt-0.5 shrink-0" /><span>{BUSINESS.address}</span></li>
+            <li className="flex items-center gap-2 text-sm text-white/60"><Instagram size={14} /><a href={BUSINESS.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-white">@cosmocarcustoms</a></li>
+          </ul>
         </div>
       </div>
+      <div className="mx-auto mt-12 flex max-w-[1280px] items-center justify-between border-t border-[#303030] pt-6">
+        <p className="text-sm text-white/35">© {new Date().getFullYear()} Cosmo Car Customs. All rights reserved.</p>
+        <p className="text-sm text-white/35">Mississauga, Ontario</p>
+      </div>
     </footer>
-  )
+  );
 }
