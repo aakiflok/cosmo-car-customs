@@ -37,9 +37,11 @@ export default function ReviewsCarousel() {
           </div>
           <blockquote key={idx} className="display-lg mb-10 max-w-[900px] text-white/90"
             style={{ animation: 'page-in 0.5s cubic-bezier(0.16,1,0.3,1) both' }}>
-            &ldquo;{r.text}&rdquo;
+            &ldquo;{r.body}&rdquo;
           </blockquote>
-          <div className="label-uc text-[10px] text-white/35">{r.author} &middot; {r.service}</div>
+          <div className="label-uc text-[10px] text-white/35">
+            {r.name} &middot; {r.service}
+          </div>
         </div>
         <div className="mt-8 flex items-center gap-3 md:hidden">
           <button onClick={prev} aria-label="Previous"
