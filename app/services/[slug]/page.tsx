@@ -6,27 +6,37 @@ import { SERVICES } from '@/lib/data';
 import { serviceSchema } from '@/lib/schema';
 import type { Metadata } from 'next';
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
   return SERVICES.map(s => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const s = SERVICES.find(s => s.slug === params.slug);
+  const { slug } = await params;
+  const s = SERVICES.find(s => s.slug === slug);
   if (!s) return {};
   return {
     title: `${s.name} in Mississauga & GTA`,
     description: s.description,
-    openGraph: { title: `${s.name} | Cosmo Car Customs`, description: s.description, url: `https://cosmocarcustoms.com/services/${s.slug}` },
+    openGraph: {
+      title: `${s.name} | Cosmo Car Customs`,
+      description: s.description,
+      url: `https://cosmocarcustoms.com/services/${s.slug}`,
+    },
   };
 }
 
-export default function ServicePage({ params }: Props) {
-  const service = SERVICES.find(s => s.slug === params.slug);
+export default async function ServicePage({ params }: Props) {
+  const { slug } = await params;
+  const service = SERVICES.find(s => s.slug === slug);
   if (!service) notFound();
   const siblingServices = SERVICES.filter(s => s.slug !== service.slug);
-  const schema = serviceSchema(service.name, service.description, `https://cosmocarcustoms.com/services/${service.slug}`);
+  const schema = serviceSchema(
+    service.name,
+    service.description,
+    `https://cosmocarcustoms.com/services/${service.slug}`,
+  );
 
   return (
     <>
@@ -47,7 +57,7 @@ export default function ServicePage({ params }: Props) {
             <Link href="/" className="label-badge mb-4 inline-flex items-center gap-2 text-white/50 hover:text-white">
               <ArrowLeft size={11} aria-hidden="true" /> Home
             </Link>
-            <div className="label-badge mb-3 text-white/50">{service.number} — Cosmo Car Customs</div>
+            <div className="label-badge mb-3 text-white/50">{service.number} &mdash; Cosmo Car Customs</div>
             <h1 className="display-mega mb-4 text-white">{service.name}</h1>
             <p className="max-w-[560px] text-[14px] leading-7 text-white/70 md:text-[15px]">{service.tagline}</p>
           </div>
@@ -72,7 +82,6 @@ export default function ServicePage({ params }: Props) {
         <section className="bg-[#222222] px-4 py-[96px] md:px-8">
           <div className="mx-auto max-w-[1280px]">
             <div className="label-badge mb-[48px] text-white/40">Service packages</div>
-            {/* 1-up on mobile, auto-cols on desktop */}
             <div
               className="grid gap-px bg-[#303030]"
               style={{ gridTemplateColumns: `repeat(${Math.min(service.packages.length, 3)}, 1fr)` }}
