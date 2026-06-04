@@ -13,7 +13,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "three": "^0.167.1",
-    "lucide-react": "^0.395.0",
+    "lucide-react": "^0.511.0",
     "clsx": "^2.1.1",
     "tailwind-merge": "^2.4.0",
     "framer-motion": "^11.13.5",
