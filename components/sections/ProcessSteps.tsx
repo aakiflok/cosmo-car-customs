@@ -1,36 +1,24 @@
-import Link from 'next/link';
-import { PROCESS_STEPS } from '@/lib/data';
+import { PROCESS } from '@/lib/data';
 
 export default function ProcessSteps() {
   return (
-    <section id="process" aria-labelledby="process-heading" className="bg-canvas px-4 py-[96px] md:px-8">
-      <div className="mx-auto max-w-[1280px]">
-        <div className="mb-[48px] max-w-[720px] reveal-up">
-          <div className="label-badge mb-[8px] text-white/40">How it works</div>
-          <h2 id="process-heading" className="display-xl mb-[16px] text-white">
-            Simple process. Precise outcome.
-          </h2>
-          <p className="text-[14px] leading-7 text-white/58 md:text-[15px]">
-            From consultation through delivery — every step is clear and intentional.
-          </p>
+    <section className="hairline bg-[#0d0d0d] px-5 py-24 md:px-10">
+      <div className="mx-auto max-w-[1440px]">
+        <div className="mb-14">
+          <span className="livery-line" />
+          <div className="label-uc mb-3 text-[9px] text-white/30">How it works</div>
+          <h2 className="display-xl text-white max-w-[600px] fade-up">From booking to delivery.</h2>
         </div>
-
-        {/* Steps — 1-up → 3-up */}
-        <div className="grid gap-px bg-[#303030] md:grid-cols-3">
-          {PROCESS_STEPS.map((s, i) => (
-            <div key={s.number} className={`bg-canvas p-[32px] reveal reveal-delay-${i + 1} md:p-[48px]`}>
-              {/* Spec-cell number */}
-              <div className="spec-cell mb-[32px]">
-                <div className="num-display text-rossa">{s.number}</div>
+        <div className="grid gap-px bg-[#1f1f1f] sm:grid-cols-2 lg:grid-cols-4">
+          {PROCESS.map((step, i) => (
+            <div key={step.title} className="bg-[#0d0d0d] p-8 fade-up" style={{ transitionDelay: `${i * 0.1}s` }}>
+              <div className="num-hero mb-6 select-none text-rossa opacity-20" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
               </div>
-              <h3 className="display-md mb-[16px] text-white">{s.title}</h3>
-              <p className="max-w-[360px] text-[13px] leading-7 text-white/60">{s.body}</p>
+              <h3 className="display-md mb-3 text-white">{step.title}</h3>
+              <p className="text-[13px] leading-6 text-white/40">{step.description}</p>
             </div>
           ))}
-        </div>
-
-        <div className="mt-[48px] text-center">
-          <Link href="/consultation" className="btn-primary">Start Your Consultation</Link>
         </div>
       </div>
     </section>

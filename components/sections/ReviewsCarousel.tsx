@@ -1,62 +1,56 @@
-import { Star } from 'lucide-react';
-import Link from 'next/link';
-import { REVIEWS, BUSINESS } from '@/lib/data';
+'use client';
+import { useState } from 'react';
+import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { REVIEWS } from '@/lib/data';
 
 export default function ReviewsCarousel() {
+  const [idx, setIdx] = useState(0);
+  const prev = () => setIdx(i => (i - 1 + REVIEWS.length) % REVIEWS.length);
+  const next = () => setIdx(i => (i + 1) % REVIEWS.length);
+  const r = REVIEWS[idx];
+
   return (
-    <section aria-labelledby="reviews-heading" className="bg-canvas px-4 py-[96px] md:px-8">
-      <div className="mx-auto max-w-[1280px]">
-        {/* Header */}
-        <div className="mb-[48px] flex flex-wrap items-end justify-between gap-6 reveal-up">
+    <section className="bg-canvas px-5 py-24 md:px-10 hairline" aria-label="Customer reviews">
+      <div className="mx-auto max-w-[1440px]">
+        <div className="mb-14 flex items-end justify-between">
           <div>
-            <div className="label-badge mb-[8px] text-white/40">Client proof</div>
-            <h2 id="reviews-heading" className="display-xl text-white">
-              {BUSINESS.googleRating} across {BUSINESS.reviewCount} verified reviews.
-            </h2>
+            <span className="livery-line" />
+            <div className="label-uc mb-3 text-[9px] text-white/30">Client voices</div>
+            <h2 className="display-xl text-white">What clients say.</h2>
           </div>
-          <Link href="/testimonials" className="btn-outline shrink-0">Read All Reviews</Link>
+          <div className="hidden items-center gap-3 md:flex">
+            <button onClick={prev} aria-label="Previous review"
+              className="flex h-12 w-12 items-center justify-center border border-[#2a2a2a] text-white/40 transition-colors hover:border-white/40 hover:text-white">
+              <ChevronLeft size={18} />
+            </button>
+            <button onClick={next} aria-label="Next review"
+              className="flex h-12 w-12 items-center justify-center border border-[#2a2a2a] text-white/40 transition-colors hover:border-white/40 hover:text-white">
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
-
-        {/* Cards — 1-up → 2-up → 3-up on mobile-tablet-desktop */}
-        <div className="grid gap-px bg-[#303030] sm:grid-cols-2 lg:grid-cols-3">
-          {REVIEWS.slice(0,3).map((r, i) => (
-            <article key={r.name} className={`bg-canvas p-[32px] reveal reveal-delay-${i + 1}`}>
-              <div className="mb-[16px] flex gap-1" aria-label={`${r.rating} out of 5 stars`}>
-                {Array.from({ length: r.rating }).map((_, j) => (
-                  <Star key={j} size={13} fill="#c79a3b" stroke="none" aria-hidden="true" />
-                ))}
-              </div>
-              <blockquote className="mb-[24px] text-[14px] leading-7 text-white/70">
-                &ldquo;{r.body}&rdquo;
-              </blockquote>
-              <footer className="border-t border-[#303030] pt-[16px]">
-                <cite className="not-italic">
-                  <div className="text-[14px] font-semibold text-white">{r.name}</div>
-                  <div className="label-badge mt-[4px] text-white/40">{r.service}</div>
-                </cite>
-              </footer>
-            </article>
-          ))}
+        <div className="border-t border-[#1f1f1f] pt-12">
+          <div className="mb-6 flex gap-1" aria-label="5 stars">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} size={14} fill="#DA291C" stroke="none" aria-hidden="true" />
+            ))}
+          </div>
+          <blockquote key={idx} className="display-lg mb-10 max-w-[900px] text-white/90"
+            style={{ animation: 'page-in 0.5s cubic-bezier(0.16,1,0.3,1) both' }}>
+            &ldquo;{r.text}&rdquo;
+          </blockquote>
+          <div className="label-uc text-[10px] text-white/35">{r.author} &middot; {r.service}</div>
         </div>
-
-        {/* Mobile — show all 5 as column */}
-        <div className="mt-px grid gap-px bg-[#303030] sm:hidden">
-          {REVIEWS.slice(3).map(r => (
-            <article key={r.name} className="bg-canvas p-[32px] reveal">
-              <div className="mb-[16px] flex gap-1">
-                {Array.from({ length: r.rating }).map((_, j) => (
-                  <Star key={j} size={13} fill="#c79a3b" stroke="none" aria-hidden="true" />
-                ))}
-              </div>
-              <blockquote className="mb-[24px] text-[14px] leading-7 text-white/70">&ldquo;{r.body}&rdquo;</blockquote>
-              <footer className="border-t border-[#303030] pt-[16px]">
-                <cite className="not-italic">
-                  <div className="text-[14px] font-semibold text-white">{r.name}</div>
-                  <div className="label-badge mt-[4px] text-white/40">{r.service}</div>
-                </cite>
-              </footer>
-            </article>
-          ))}
+        <div className="mt-8 flex items-center gap-3 md:hidden">
+          <button onClick={prev} aria-label="Previous"
+            className="flex h-10 w-10 items-center justify-center border border-[#2a2a2a] text-white/40">
+            <ChevronLeft size={16} />
+          </button>
+          <span className="label-uc text-[9px] text-white/25">{idx + 1} / {REVIEWS.length}</span>
+          <button onClick={next} aria-label="Next"
+            className="flex h-10 w-10 items-center justify-center border border-[#2a2a2a] text-white/40">
+            <ChevronRight size={16} />
+          </button>
         </div>
       </div>
     </section>
