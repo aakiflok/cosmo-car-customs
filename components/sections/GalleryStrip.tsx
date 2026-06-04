@@ -1,5 +1,7 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 const IMGS = [
   { src:'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=900&q=80', alt:'Luxury vehicle front quarter with polished paint' },
@@ -11,22 +13,40 @@ const IMGS = [
 ];
 
 export default function GalleryStrip() {
+  useScrollReveal();
+
   return (
     <section id="gallery" className="bg-[#f7f7f7] px-4 py-24 md:px-8 md:py-28">
       <div className="mx-auto max-w-[1280px]">
         <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <div className="label-badge mb-3 text-black/40">Before &amp; after</div>
-            <h2 className="display-xl text-[#181818]">The work speaks louder than any claim.</h2>
+            <div className="label-badge mb-3 text-black/40 reveal-up">Before &amp; after</div>
+            <h2 className="display-xl text-[#181818] fade-up delay-1">The work speaks louder than any claim.</h2>
           </div>
-          <Link href="/gallery" className="btn-outline-light">View Full Gallery</Link>
+          <div className="reveal-right delay-2">
+            <Link href="/gallery" className="btn-outline-light">View Full Gallery</Link>
+          </div>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {IMGS.map(img => (
-            <div key={img.src} className="relative h-64 overflow-hidden reveal">
-              <Image src={img.src} alt={img.alt} fill className="object-cover transition-transform duration-700 hover:scale-105" sizes="(max-width: 768px) 100vw, 33vw" loading="lazy" />
-            </div>
-          ))}
+          {IMGS.map((img, i) => {
+            const dir = i % 3 === 0 ? 'reveal-left' : i % 3 === 1 ? 'reveal-up' : 'reveal-right';
+            return (
+              <div
+                key={img.src}
+                className={`relative h-64 overflow-hidden ${dir}`}
+                style={{ transitionDelay: `${i * 0.09}s` }}
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  className="object-cover transition-transform duration-700 hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  loading="lazy"
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
