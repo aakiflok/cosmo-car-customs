@@ -10,10 +10,10 @@ import { BUSINESS } from '@/lib/data';
 const HeroParticles = dynamic(() => import('./HeroParticles'), { ssr: false });
 
 export default function HeroBand() {
-  const wrapRef   = useRef<HTMLElement>(null);
-  const btn1Ref   = useRef<HTMLAnchorElement>(null);
-  const btn2Ref   = useRef<HTMLAnchorElement>(null);
-  const bgRef     = useRef<HTMLDivElement>(null);
+  const wrapRef    = useRef<HTMLElement>(null);
+  const btn1Ref    = useRef<HTMLAnchorElement>(null);
+  const btn2Ref    = useRef<HTMLAnchorElement>(null);
+  const bgRef      = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -52,19 +52,21 @@ export default function HeroBand() {
   }, []);
 
   return (
-    <section ref={wrapRef} className="relative flex min-h-[100svh] items-end overflow-hidden bg-black" aria-label="Hero">
-
-      {/* BG image — unoptimized so external URL renders */}
+    <section
+      ref={wrapRef}
+      className="relative flex min-h-[100svh] w-full items-end overflow-hidden bg-black"
+      aria-label="Hero"
+    >
+      {/* BG image */}
       <div ref={bgRef} className="absolute inset-0 scale-110 origin-center will-change-transform">
         <Image
           src="https://images.unsplash.com/photo-1494976688153-cd3554744ab4?auto=format&fit=crop&w=1800&q=85"
-          alt="" role="presentation" fill unoptimized
+          alt="" role="presentation" fill unoptimized priority
           className="object-cover object-center"
-          priority sizes="100vw"
+          sizes="100vw"
         />
-        {/* Gradient overlays — lightened so image is visible */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(10,10,10,0.82) 0%, rgba(10,10,10,0.55) 55%, rgba(10,10,10,0.25) 100%)' }} />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.5) 35%, transparent 70%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(10,10,10,0.88) 0%, rgba(10,10,10,0.60) 50%, rgba(10,10,10,0.30) 100%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.5) 40%, transparent 75%)' }} />
       </div>
 
       {/* Particles */}
@@ -72,12 +74,12 @@ export default function HeroBand() {
         <HeroParticles />
       </div>
 
-      {/* Red left accent bar */}
+      {/* Left red accent */}
       <div className="absolute left-0 top-0 h-full w-[3px] bg-rossa z-20" aria-hidden="true" />
 
-      {/* Content */}
+      {/* Content — full width, symmetric padding matching nav */}
       <div ref={contentRef} className="relative z-30 w-full will-change-transform">
-        <div className="mx-auto max-w-[1440px] container-pad pb-16 pt-36 md:pb-24 md:pt-44">
+        <div className="w-full px-6 sm:px-10 lg:px-16 pb-16 pt-36 md:pb-24 md:pt-44">
 
           {/* Eyebrow */}
           <div className="hero-fade opacity-0 translate-y-6 mb-10 flex items-center gap-4">
@@ -87,9 +89,10 @@ export default function HeroBand() {
             </span>
           </div>
 
-          {/* Two-column grid */}
-          <div className="grid lg:grid-cols-[1fr_420px] lg:items-end gap-10 lg:gap-16 mb-16 lg:mb-20">
+          {/* Two-column — heading left, copy+CTA right */}
+          <div className="grid lg:grid-cols-2 lg:items-end gap-10 lg:gap-20 mb-16 lg:mb-20">
 
+            {/* H1 */}
             <div>
               <h1
                 className="hero-clip display-mega text-white opacity-0 leading-[0.92]"
@@ -101,12 +104,14 @@ export default function HeroBand() {
               </h1>
             </div>
 
+            {/* Tagline + CTAs */}
             <div className="flex flex-col gap-8 lg:pb-2">
               <p
-                className="hero-clip text-[15px] leading-8 text-white/60 opacity-0 max-w-[400px]"
+                className="hero-clip text-[15px] leading-8 text-white/60 opacity-0 max-w-[480px]"
                 style={{ clipPath: 'inset(100% 0 0% 0)' }}
               >
-                Mississauga&rsquo;s most obsessive detailing studio — ceramic coating, PPF, paint correction, and tinting for drivers who demand perfection.
+                Mississauga&rsquo;s most obsessive detailing studio — ceramic coating,
+                PPF, paint correction, and tinting for drivers who demand perfection.
               </p>
               <div className="hero-fade opacity-0 translate-y-6 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link ref={btn1Ref} href="/consultation" className="btn-primary magnetic" data-cursor="link">
@@ -119,13 +124,13 @@ export default function HeroBand() {
             </div>
           </div>
 
-          {/* Stats */}
+          {/* Stats row */}
           <div className="hero-fade opacity-0 translate-y-6 border-t border-white/10 pt-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
             {[
-              [BUSINESS.googleRating,          'Google Rating'],
-              ['200+',                           'Five Star Reviews'],
-              [BUSINESS.yearsExperience + '+',   'Years Experience'],
-              ['500+',                           'Vehicles Protected'],
+              [BUSINESS.googleRating,        'Google Rating'      ],
+              ['200+',                         'Five Star Reviews' ],
+              [BUSINESS.yearsExperience + '+', 'Years Experience'  ],
+              ['500+',                         'Vehicles Protected'],
             ].map(([v, l]) => (
               <div key={String(l)}>
                 <div className="text-[2rem] sm:text-[2.5rem] font-bold font-barlow tracking-tight text-white leading-none">{v}</div>
