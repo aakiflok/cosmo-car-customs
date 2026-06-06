@@ -50,7 +50,10 @@
 }
 
 /* ─── Reset ───────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* box-sizing on everything including pseudo-elements */
+*, *::before, *::after { box-sizing: border-box; }
+/* margin/padding reset on real elements only — never touch ::before/::after */
+* { margin: 0; padding: 0; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   background: var(--canvas);
@@ -341,28 +344,19 @@ html.lenis, html.lenis body { height: auto; }
 }
 
 /* ─── Layout utilities ────────────────────────────────────── */
-
-/*
-  container-pad: full-width inner wrapper with symmetric horizontal padding.
-  Apply directly to the element that wraps page content.
-  Do NOT nest inside max-w-[*] — this IS the container.
-*/
 .container-pad {
   width: 100%;
   padding-left:  clamp(1.5rem, 5vw, 5rem);
   padding-right: clamp(1.5rem, 5vw, 5rem);
 }
-
 .section-pad {
   padding-top:    clamp(4rem, 8vw, 8rem);
   padding-bottom: clamp(4rem, 8vw, 8rem);
 }
-
 .page-hero {
   padding-top:    clamp(7rem, 12vw, 12rem);
   padding-bottom: clamp(3rem, 6vw, 6rem);
 }
-
 .livery-line {
   display: block;
   width: 48px;
