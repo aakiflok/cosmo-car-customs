@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
+import Image from 'next/image';
 
 const JOBS = [
   {
@@ -40,10 +40,11 @@ export default function BeforeAfterBand() {
     <section className="w-full bg-canvas border-t border-hairline section-pad">
       <div className="w-full px-6 sm:px-10 lg:px-16">
 
+        {/* Header */}
         <div className="mb-12">
           <span className="livery-line" />
           <div className="label-uc text-[9px] text-white/40 mb-4">Real Results</div>
-          <h2 className="display-lg">See the transformation.</h2>
+          <h2 className="display-lg text-white">See the transformation.</h2>
         </div>
 
         {/* Tabs */}
@@ -53,7 +54,9 @@ export default function BeforeAfterBand() {
               key={i}
               onClick={() => setActive(i)}
               className={`px-5 py-3 label-uc text-[9px] transition-all duration-200 ${
-                active === i ? 'bg-rossa text-white' : 'text-white/40 hover:text-white hover:bg-white/5'
+                active === i
+                  ? 'bg-rossa text-white'
+                  : 'text-white/40 hover:text-white hover:bg-white/5'
               }`}
             >
               {j.label}
@@ -61,11 +64,44 @@ export default function BeforeAfterBand() {
           ))}
         </div>
 
-        {/* Panel */}
+        {/* Side-by-side comparison + meta */}
         <div className="grid md:grid-cols-[3fr_1fr] gap-8 items-start">
-          <div className="w-full overflow-hidden">
-            <BeforeAfterSlider key={active} beforeImg={job.beforeImg} afterImg={job.afterImg} />
+
+          {/* Images */}
+          <div className="grid grid-cols-2 gap-2">
+            {/* Before */}
+            <div className="relative overflow-hidden" style={{ aspectRatio: '16/9' }}>
+              <Image
+                src={job.beforeImg}
+                alt={`Before — ${job.vehicle}`}
+                fill
+                unoptimized
+                className="object-cover"
+                sizes="(max-width:768px) 50vw, 37vw"
+              />
+              <div className="absolute inset-0 bg-black/20" />
+              <span className="absolute left-3 top-3 label-uc text-[9px] bg-black/60 px-3 py-1 backdrop-blur-sm text-white/80">
+                Before
+              </span>
+            </div>
+
+            {/* After */}
+            <div className="relative overflow-hidden" style={{ aspectRatio: '16/9' }}>
+              <Image
+                src={job.afterImg}
+                alt={`After — ${job.vehicle}`}
+                fill
+                unoptimized
+                className="object-cover"
+                sizes="(max-width:768px) 50vw, 37vw"
+              />
+              <span className="absolute right-3 top-3 label-uc text-[9px] bg-rossa px-3 py-1 text-white">
+                After
+              </span>
+            </div>
           </div>
+
+          {/* Meta */}
           <div className="flex flex-col gap-6 pt-2">
             <div>
               <p className="label-uc text-[9px] text-white/40 mb-2">Vehicle</p>
@@ -86,12 +122,18 @@ export default function BeforeAfterBand() {
               <p className="label-uc text-[9px] text-white/40 mb-3">Products</p>
               <div className="flex flex-wrap gap-2">
                 {job.products.map((p) => (
-                  <span key={p} className="label-uc text-[8px] border border-hairline px-2 py-1 text-white/60">{p}</span>
+                  <span
+                    key={p}
+                    className="label-uc text-[8px] border border-hairline px-2 py-1 text-white/60"
+                  >
+                    {p}
+                  </span>
                 ))}
               </div>
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );
