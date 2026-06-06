@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
 
@@ -39,25 +38,22 @@ export default function BeforeAfterBand() {
 
   return (
     <section className="w-full bg-canvas border-t border-hairline section-pad">
-      <div className="mx-auto max-w-[1440px] container-pad">
+      <div className="w-full px-6 sm:px-10 lg:px-16">
 
-        {/* Header */}
         <div className="mb-12">
           <span className="livery-line" />
           <div className="label-uc text-[9px] text-white/40 mb-4">Real Results</div>
           <h2 className="display-lg">See the transformation.</h2>
         </div>
 
-        {/* Tab switcher */}
+        {/* Tabs */}
         <div className="flex gap-0 mb-10 border border-hairline w-fit">
           {JOBS.map((j, i) => (
             <button
               key={i}
               onClick={() => setActive(i)}
               className={`px-5 py-3 label-uc text-[9px] transition-all duration-200 ${
-                active === i
-                  ? 'bg-rossa text-white'
-                  : 'text-white/40 hover:text-white hover:bg-white/5'
+                active === i ? 'bg-rossa text-white' : 'text-white/40 hover:text-white hover:bg-white/5'
               }`}
             >
               {j.label}
@@ -65,23 +61,15 @@ export default function BeforeAfterBand() {
           ))}
         </div>
 
-        {/* Main panel: slider left, info right */}
+        {/* Panel */}
         <div className="grid md:grid-cols-[3fr_1fr] gap-8 items-start">
-
-          {/* Slider */}
           <div className="w-full overflow-hidden">
-            <BeforeAfterSlider
-              key={active}
-              beforeImg={job.beforeImg}
-              afterImg={job.afterImg}
-            />
+            <BeforeAfterSlider key={active} beforeImg={job.beforeImg} afterImg={job.afterImg} />
           </div>
-
-          {/* Info sidebar */}
           <div className="flex flex-col gap-6 pt-2">
             <div>
               <p className="label-uc text-[9px] text-white/40 mb-2">Vehicle</p>
-              <p className="text-white text-15px font-medium">{job.vehicle}</p>
+              <p className="text-white text-[14px] font-medium">{job.vehicle}</p>
             </div>
             <div className="h-px bg-hairline" />
             <div>
@@ -98,18 +86,12 @@ export default function BeforeAfterBand() {
               <p className="label-uc text-[9px] text-white/40 mb-3">Products</p>
               <div className="flex flex-wrap gap-2">
                 {job.products.map((p) => (
-                  <span
-                    key={p}
-                    className="label-uc text-[8px] border border-hairline px-2 py-1 text-white/60"
-                  >
-                    {p}
-                  </span>
+                  <span key={p} className="label-uc text-[8px] border border-hairline px-2 py-1 text-white/60">{p}</span>
                 ))}
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </section>
   );

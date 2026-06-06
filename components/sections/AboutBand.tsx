@@ -6,17 +6,18 @@ import { BUSINESS } from '@/lib/data';
 import { useParallax } from '@/hooks/useParallax';
 import { useCounter } from '@/hooks/useCounter';
 
-function Stat({ value, suffix = '', label, decimals = 0, delay = 0 }: { value: number; suffix?: string; label: string; decimals?: number; delay?: number }) {
+function Stat({ value, suffix = '', label, decimals = 0, delay = 0 }: {
+  value: number; suffix?: string; label: string; decimals?: number; delay?: number;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   useCounter(ref, value, 2000);
-  
   return (
-    <div className="bg-canvas p-4 sm:p-6 md:p-8 fade-up" style={{ transitionDelay: `${delay}s` }}>
-      <div className="text-[1.75rem] sm:text-[2.25rem] md:text-[2.5rem] font-bold tracking-tight text-white font-barlow leading-none">
+    <div className="bg-canvas p-6 md:p-8 fade-up" style={{ transitionDelay: `${delay}s` }}>
+      <div className="text-[2rem] sm:text-[2.5rem] font-bold tracking-tight text-white font-barlow leading-none">
         <span ref={ref}>{decimals > 0 ? value.toFixed(decimals) : 0}</span>
         <span className="text-rossa ml-1">{suffix}</span>
       </div>
-      <div className="label-uc mt-2 sm:mt-3 text-[8px] sm:text-[9px] text-white/40">{label}</div>
+      <div className="label-uc mt-3 text-[9px] text-white/40">{label}</div>
     </div>
   );
 }
@@ -26,32 +27,33 @@ export default function AboutBand() {
   useParallax(imgRef, 80);
 
   return (
-    <section aria-labelledby="about-heading" className="bg-[#0a0a0a] section-pad container-pad relative overflow-hidden">
-      <div className="mx-auto max-w-[1440px]">
-        <div className="grid gap-px bg-[#1f1f1f] lg:grid-cols-2">
-          
+    <section aria-labelledby="about-heading" className="w-full bg-canvas section-pad relative overflow-hidden">
+      <div className="w-full px-6 sm:px-10 lg:px-16">
+        <div className="grid gap-px bg-hairline lg:grid-cols-2">
+
           {/* Photo */}
-          <div className="relative min-h-[300px] sm:min-h-[500px] md:min-h-[650px] lg:min-h-[720px] overflow-hidden bg-canvas clip-reveal">
+          <div className="relative min-h-[340px] sm:min-h-[500px] lg:min-h-[720px] overflow-hidden bg-canvas clip-reveal">
             <div ref={imgRef} className="absolute inset-[-15%] will-change-transform">
               <Image
                 src="https://images.unsplash.com/photo-1616455579100-2ceaa4eb7d48?auto=format&fit=crop&w=1200&q=80"
                 alt="Cosmo Car Customs detailing studio"
-                fill className="object-cover"
-                sizes="(max-width:768px) 100vw, 50vw" loading="lazy"
+                fill unoptimized
+                className="object-cover"
+                sizes="(max-width:768px) 100vw, 50vw"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-black/20" />
             </div>
-            {/* Pull Quote */}
-            <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 lg:bottom-10 left-4 sm:left-6 md:left-8 lg:left-10 right-4 sm:right-6 md:right-8 lg:right-10 bg-black/60 backdrop-blur-md p-4 sm:p-6 md:p-8 border-l-2 border-rossa fade-up delay-4">
-              <p className="font-playfair text-[1rem] sm:text-[1.25rem] md:text-[1.5rem] italic text-white leading-tight">
-                "We don't do volume. We do perfection. Every car is treated as though it's the only one in the shop."
+            <div className="absolute bottom-8 left-8 right-8 bg-black/60 backdrop-blur-md p-6 md:p-8 border-l-2 border-rossa fade-up delay-4">
+              <p className="font-playfair text-[1.1rem] sm:text-[1.35rem] italic text-white leading-snug">
+                &ldquo;We don&rsquo;t do volume. We do perfection. Every car is treated as though it&rsquo;s the only one in the shop.&rdquo;
               </p>
-              <div className="label-uc mt-3 sm:mt-4 text-[8px] sm:text-[9px] text-white/50">&mdash; Rajinder, Founder</div>
+              <div className="label-uc mt-4 text-[9px] text-white/50">&mdash; Rajinder, Founder</div>
             </div>
           </div>
 
           {/* Content */}
-          <div className="bg-canvas p-6 sm:p-10 md:p-14 lg:p-20 flex flex-col justify-center">
+          <div className="bg-canvas p-8 sm:p-12 lg:p-16 flex flex-col justify-center">
             <div className="stagger-children mb-12">
               <span className="livery-line fade-up" />
               <div className="label-uc mb-4 text-[9px] text-white/40 fade-up">About the Studio</div>
@@ -64,19 +66,17 @@ export default function AboutBand() {
                   condition and working up to full ceramic, PPF, correction, and tinting services.
                 </p>
                 <p className="text-[15px] leading-8 text-white/60 fade-up">
-                  We never rush a job and we never cut corners on product or process. Our facility is designed for one thing: delivering flawless results.
+                  We never rush a job and we never cut corners on product or process. Our facility is designed
+                  for one thing: delivering flawless results.
                 </p>
               </div>
             </div>
-
-            {/* Stats */}
-            <div className="mb-8 sm:mb-12 grid grid-cols-2 gap-px bg-[#1f1f1f]">
-              <Stat value={4.9} suffix="★" label="Google Rating" decimals={1} delay={0.3} />
-              <Stat value={parseInt(BUSINESS.reviewCount)} suffix="+" label="Verified Reviews" delay={0.4} />
+            <div className="mb-10 grid grid-cols-2 gap-px bg-hairline">
+              <Stat value={4.9}  suffix="★" label="Google Rating"    decimals={1} delay={0.3} />
+              <Stat value={parseInt(BUSINESS.reviewCount)}     suffix="+" label="Verified Reviews" delay={0.4} />
               <Stat value={parseInt(BUSINESS.yearsExperience)} suffix="+" label="Years Experience" delay={0.5} />
-              <Stat value={500} suffix="+" label="Vehicles Served" delay={0.6} />
+              <Stat value={500}  suffix="+" label="Vehicles Served"  delay={0.6} />
             </div>
-
             <div className="fade-up delay-7">
               <Link href="/about" className="btn-outline magnetic" data-cursor="link">
                 <span>Read Full Story</span>

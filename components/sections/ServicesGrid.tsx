@@ -9,8 +9,9 @@ export default function ServicesGrid() {
   useScrollReveal();
 
   return (
-    <section id="services" aria-labelledby="services-heading" className="bg-canvas section-pad container-pad">
-      <div className="mx-auto max-w-[1440px]">
+    <section id="services" aria-labelledby="services-heading" className="w-full bg-canvas section-pad">
+      <div className="w-full px-6 sm:px-10 lg:px-16">
+
         <div className="mb-14 grid lg:grid-cols-[1fr_auto] lg:items-end gap-8">
           <div>
             <span className="livery-line reveal-up" />
@@ -24,7 +25,8 @@ export default function ServicesGrid() {
             <p className="label-uc text-[9px] text-white/25">Services available</p>
           </div>
         </div>
-        <div className="grid gap-px bg-[#1f1f1f] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+
+        <div className="grid gap-px bg-hairline sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {SERVICES.map((s, i) => (
             <Link
               key={s.slug}
