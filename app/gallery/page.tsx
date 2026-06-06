@@ -24,7 +24,7 @@ export default function GalleryPage() {
     <div className="min-h-screen bg-canvas">
 
       {/* Hero */}
-      <section className="px-5 pb-24 pt-36 md:px-10">
+      <section className="container-pad page-hero">
         <div className="mx-auto max-w-[1440px]">
           <span className="livery-line" />
           <div className="label-uc mb-3 text-[9px] text-white/30">Before &amp; after</div>
@@ -36,7 +36,7 @@ export default function GalleryPage() {
       </section>
 
       {/* Grid */}
-      <section className="hairline px-5 pb-24 md:px-10">
+      <section className="hairline container-pad section-pad">
         <div className="mx-auto max-w-[1440px]">
           <div className="grid gap-px bg-[#1f1f1f] sm:grid-cols-2 lg:grid-cols-4">
             {GALLERY.map((img, i) => (

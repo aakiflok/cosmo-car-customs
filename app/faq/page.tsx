@@ -10,7 +10,7 @@ const ALL_FAQS = SERVICES.flatMap(s => s.faqs.map(f => ({ ...f, service: s.name 
 export default function FAQPage() {
   const [open, setOpen] = useState<number | null>(null);
   return (
-    <div className="min-h-screen bg-canvas px-4 pb-[96px] pt-[128px] md:px-8">
+    <div className="min-h-screen bg-canvas container-pad page-hero pb-24">
       <div className="mx-auto max-w-[860px]">
         <div className="label-badge mb-[8px] text-white/40">FAQ</div>
         <h1 className="display-xl mb-[64px] text-white">Common questions, direct answers.</h1>

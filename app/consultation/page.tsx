@@ -32,7 +32,7 @@ export default function ConsultationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas px-5 pb-24 pt-36 md:px-10">
+    <div className="min-h-screen bg-canvas container-pad page-hero pb-24">
       <div className="mx-auto max-w-[680px]">
         {!submitted ? (
           <>

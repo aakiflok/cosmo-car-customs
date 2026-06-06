@@ -9,8 +9,9 @@ export function generateStaticParams() {
   return SERVICES.map(s => ({ slug: s.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const s = SERVICES.find(s => s.slug === params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const s = SERVICES.find(s => s.slug === slug);
   if (!s) return {};
   return {
     title: `${s.name} — Cosmo Car Customs`,
@@ -19,8 +20,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default function ServicePage({ params }: { params: { slug: string } }) {
-  const service = SERVICES.find(s => s.slug === params.slug);
+export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const service = SERVICES.find(s => s.slug === slug);
   if (!service) notFound();
 
   return (
@@ -34,7 +36,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
           <div className="hero-scrim absolute inset-0" />
         </div>
         <div className="absolute left-0 top-0 h-full w-[3px] bg-rossa opacity-90" aria-hidden="true" />
-        <div className="relative z-10 mx-auto w-full max-w-[1440px] px-5 pb-16 pt-36 md:px-10">
+        <div className="relative z-10 mx-auto w-full max-w-[1440px] container-pad page-hero pb-16">
           <span className="livery-line" />
           <div className="label-uc mb-3 text-[9px] text-white/40">{service.number} &mdash; Service</div>
           <h1 className="display-xl mb-4 text-white max-w-[700px]">{service.name}</h1>
@@ -43,7 +45,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
       </section>
 
       {/* Description + outcome */}
-      <section className="hairline px-5 py-24 md:px-10">
+      <section className="hairline container-pad section-pad">
         <div className="mx-auto max-w-[1440px]">
           <div className="grid gap-px bg-[#1f1f1f] lg:grid-cols-[1.4fr_1fr]">
             <div className="bg-canvas p-10 md:p-16">
@@ -64,7 +66,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
       </section>
 
       {/* Packages */}
-      <section className="hairline bg-[#0d0d0d] px-5 py-24 md:px-10">
+      <section className="hairline bg-[#0d0d0d] container-pad section-pad">
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-14">
             <span className="livery-line" />
@@ -92,7 +94,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
 
       {/* FAQs */}
       {service.faqs.length > 0 && (
-        <section className="hairline px-5 py-24 md:px-10">
+        <section className="hairline container-pad section-pad">
           <div className="mx-auto max-w-[860px]">
             <div className="mb-14">
               <span className="livery-line" />
@@ -112,7 +114,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
       )}
 
       {/* CTA */}
-      <section className="cta-red px-5 py-24 md:px-10">
+      <section className="cta-red container-pad section-pad">
         <div className="mx-auto max-w-[1440px] flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="label-uc mb-3 text-[9px] text-white/60">Ready?</div>

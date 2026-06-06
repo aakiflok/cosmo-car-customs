@@ -1,83 +1,204 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { gsap } from 'gsap';
 import { useMagnetic } from '@/hooks/useMagnetic';
 import { BUSINESS } from '@/lib/data';
+
+// Dynamically import Three.js particles to keep initial bundle small
+const HeroParticles = dynamic(() => import('./HeroParticles'), { ssr: false });
 
 export default function HeroBand() {
   const wrapRef = useRef<HTMLElement>(null);
   const btn1Ref = useRef<HTMLAnchorElement>(null);
   const btn2Ref = useRef<HTMLAnchorElement>(null);
-  const imgRef  = useRef<HTMLDivElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const fgRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [isReady, setIsReady] = useState(false);
 
   useMagnetic(btn1Ref as React.RefObject<HTMLElement>);
   useMagnetic(btn2Ref as React.RefObject<HTMLElement>);
 
   useEffect(() => {
-    const img = imgRef.current;
-    if (!img || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-    const fn = () => {
-      img.style.transform = `translateY(${window.scrollY * 0.3}px) scale(1.08)`;
+    // Wait for preloader to dispatch complete event
+    const handleReady = () => setIsReady(true);
+    window.addEventListener('preloaderComplete', handleReady);
+    
+    // Fallback if event is missed
+    const t = setTimeout(() => setIsReady(true), 2800);
+    
+    return () => {
+      window.removeEventListener('preloaderComplete', handleReady);
+      clearTimeout(t);
     };
-    window.addEventListener('scroll', fn, { passive: true });
-    return () => window.removeEventListener('scroll', fn);
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      wrapRef.current?.querySelectorAll<HTMLElement>('.clip-reveal, .fade-up')
-        .forEach((el, i) => setTimeout(() => el.classList.add('in'), i * 90));
-    }, 1900);
-    return () => clearTimeout(t);
+    if (!isReady || !wrapRef.current) return;
+    
+    // Entrance animations sequence
+    const ctx = gsap.context(() => {
+      gsap.to('.clip-reveal', {
+        clipPath: 'inset(0 0 0% 0)',
+        opacity: 1,
+        duration: 1.2,
+        stagger: 0.15,
+        ease: 'power4.out',
+      });
+      gsap.to('.fade-up', {
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        stagger: 0.1,
+        ease: 'power3.out',
+        delay: 0.4
+      });
+    }, wrapRef);
+    
+    return () => ctx.revert();
+  }, [isReady]);
+
+  // 4-layer Parallax
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    
+    const ctx = gsap.context(() => {
+      // Background layer (slowest)
+      gsap.to(bgRef.current, {
+        yPercent: 30,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: wrapRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        }
+      });
+      
+      // Foreground gradient layer
+      gsap.to(fgRef.current, {
+        yPercent: 15,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: wrapRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        }
+      });
+
+      // Text content layer (fastest)
+      gsap.to(contentRef.current, {
+        yPercent: -20,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: wrapRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        }
+      });
+    }, wrapRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={wrapRef} className="relative flex min-h-[100svh] items-end overflow-hidden bg-canvas" aria-label="Hero">
-      <div ref={imgRef} className="absolute inset-0" style={{ transform: 'scale(1.08)' }}>
-        <Image
-          src="https://images.unsplash.com/photo-1494976688153-cd3554744ab4?auto=format&fit=crop&w=1800&q=80"
-          alt="" role="presentation" fill className="object-cover object-center" priority sizes="100vw"
-        />
-      </div>
-      <div className="hero-scrim absolute inset-0" aria-hidden="true" />
-      <div className="absolute left-0 top-0 h-full w-[3px] bg-rossa opacity-90" aria-hidden="true" />
+    <section ref={wrapRef} className="relative flex min-h-[100svh] items-end overflow-hidden bg-black" aria-label="Hero">
 
-      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-5 pb-16 pt-28 md:px-10 md:pb-24">
-        <div className="fade-up mb-6 flex items-center gap-4">
-          <span className="block h-[2px] w-8 bg-rossa" />
-          <span className="label-uc text-[10px] text-white/50">
-            {BUSINESS.googleRating} Google &middot; {BUSINESS.reviewCount} Reviews &middot; Mississauga
-          </span>
-        </div>
-        <div className="overflow-hidden mb-6">
-          <h1 className="clip-reveal display-mega text-white max-w-[900px]">Precision detailing. Showroom finish.</h1>
-        </div>
-        <div className="overflow-hidden mb-10">
-          <p className="clip-reveal delay-1 text-[15px] leading-7 text-white/55 max-w-[520px]">
-            Ceramic coating, PPF, paint correction &amp; tinting for drivers who demand perfection. Serving Mississauga and the GTA.
-          </p>
-        </div>
-        <div className="fade-up delay-2 flex flex-col gap-3 sm:flex-row">
-          <Link ref={btn1Ref} href="/consultation" className="btn-primary magnetic"><span>Request Consultation</span></Link>
-          <Link ref={btn2Ref} href="#services" className="btn-outline magnetic">Explore Services</Link>
-        </div>
-        <div className="fade-up delay-3 mt-16 grid grid-cols-3 gap-px border-t border-white/10 pt-8 sm:w-fit">
-          {[
-            [BUSINESS.googleRating, 'Google Rating'],
-            [BUSINESS.reviewCount,  'Reviews'],
-            [BUSINESS.yearsExperience + '+', 'Years'],
-          ].map(([v, l]) => (
-            <div key={String(l)} className="pr-10">
-              <div className="text-[2rem] font-bold leading-none tracking-tight text-white">{v}</div>
-              <div className="label-uc mt-2 text-[9px] text-white/35">{l}</div>
+      {/* Layer 1: Background image — right half only on desktop, full on mobile */}
+      <div ref={bgRef} className="absolute inset-0 scale-105 origin-center will-change-transform">
+        <Image
+          src="https://images.unsplash.com/photo-1494976688153-cd3554744ab4?auto=format&fit=crop&w=1800&q=85"
+          alt="" role="presentation" fill
+          className="object-cover object-center opacity-90"
+          priority sizes="100vw"
+        />
+        {/* Left-side darkening so text stays readable */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/20" />
+        {/* Bottom fade */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+      </div>
+
+      {/* Layer 2: Subtle particles overlay */}
+      <div className="absolute inset-0 z-0 opacity-40">
+        <HeroParticles />
+      </div>
+
+      {/* Red accent bar */}
+      <div className="absolute left-0 top-0 h-full w-[3px] bg-rossa z-20" aria-hidden="true" />
+
+      {/* Layer 3: Content — two-column layout */}
+      <div ref={contentRef} className="relative z-30 w-full will-change-transform">
+        <div className="mx-auto max-w-[1440px] container-pad pb-16 pt-36 md:pb-24 md:pt-44">
+
+          {/* Top label */}
+          <div className="fade-up translate-y-6 opacity-0 mb-10 flex items-center gap-4">
+            <span className="block h-[1px] w-10 bg-rossa" />
+            <span className="label-uc text-[10px] text-white/50 tracking-[0.2em]">
+              {BUSINESS.googleRating} Google &middot; {BUSINESS.reviewCount} Reviews &middot; Mississauga
+            </span>
+          </div>
+
+          {/* Main content grid: heading left, tagline+CTA right */}
+          <div className="grid lg:grid-cols-[1fr_420px] lg:items-end gap-10 lg:gap-16 mb-16 lg:mb-20">
+
+            {/* Left: Big heading */}
+            <div>
+              <div className="overflow-hidden">
+                <h1
+                  className="clip-reveal display-mega text-white opacity-0 leading-[0.92]"
+                  style={{ clipPath: 'inset(100% 0 0% 0)' }}
+                >
+                  The Detail
+                  <br />
+                  <em className="text-white/80">Is Everything.</em>
+                </h1>
+              </div>
             </div>
-          ))}
+
+            {/* Right: tagline + CTAs */}
+            <div className="flex flex-col gap-8 lg:pb-2">
+              <div className="overflow-hidden">
+                <p className="clip-reveal text-[15px] leading-8 text-white/55 opacity-0 max-w-[400px]" style={{ clipPath: 'inset(100% 0 0% 0)' }}>
+                  Mississauga&rsquo;s most obsessive detailing studio — ceramic coating, PPF, paint correction, and tinting for drivers who demand perfection.
+                </p>
+              </div>
+              <div className="fade-up translate-y-6 opacity-0 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Link ref={btn1Ref} href="/consultation" className="btn-primary magnetic" data-cursor="link">
+                  <span>Request Consultation</span>
+                </Link>
+                <Link ref={btn2Ref} href="#services" className="btn-outline magnetic" data-cursor="link">
+                  Explore Services
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats strip — full width */}
+          <div className="fade-up translate-y-6 opacity-0 border-t border-white/10 pt-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
+            {[
+              [BUSINESS.googleRating, 'Google Rating'],
+              ['200+', 'Five Star Reviews'],
+              [BUSINESS.yearsExperience + '+', 'Years Experience'],
+              ['500+', 'Vehicles Protected'],
+            ].map(([v, l]) => (
+              <div key={String(l)}>
+                <div className="text-[2rem] sm:text-[2.5rem] font-bold font-barlow tracking-tight text-white leading-none">{v}</div>
+                <div className="label-uc mt-2 text-[9px] text-white/35">{l}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      <div className="absolute bottom-8 right-8 hidden flex-col items-center gap-3 md:flex" aria-hidden="true">
-        <span className="label-uc text-[9px] text-white/25" style={{ writingMode:'vertical-rl' }}>Scroll</span>
-        <span className="block h-12 w-px bg-gradient-to-b from-white/20 to-transparent" />
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-10 right-10 z-30 hidden flex-col items-center gap-4 md:flex fade-up translate-y-8 opacity-0 delay-9" aria-hidden="true">
+        <span className="label-uc text-[9px] text-white/30" style={{ writingMode: 'vertical-rl' }}>Scroll</span>
+        <span className="pulse-indicator block h-16 w-[1px] bg-gradient-to-b from-white/40 to-transparent" />
       </div>
     </section>
   );

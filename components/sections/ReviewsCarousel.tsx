@@ -26,37 +26,37 @@ export default function ReviewsCarousel() {
   const prev = useCallback(() => navigate('prev'), [navigate]);
   const next = useCallback(() => navigate('next'), [navigate]);
 
-  useTouchSwipe(containerRef, next, prev);
+  const touchHandlers = useTouchSwipe({ onSwipeLeft: next, onSwipeRight: prev });
 
   const r = REVIEWS[idx];
 
   return (
-    <section className="bg-canvas px-5 py-24 md:px-10 hairline" aria-label="Customer reviews">
+    <section className="bg-canvas section-pad container-pad hairline" aria-label="Customer reviews">
       <div className="mx-auto max-w-[1440px]">
-        <div className="mb-14 flex items-end justify-between">
+        <div className="mb-10 sm:mb-14 flex items-end justify-between flex-col sm:flex-row">
           <div>
             <span className="livery-line reveal-up" />
-            <div className="label-uc mb-3 text-[9px] text-white/30 reveal-up delay-1">Client voices</div>
-            <h2 className="display-xl text-white fade-up delay-2">What clients say.</h2>
+            <div className="label-uc mb-2 sm:mb-3 text-[9px] text-white/30 reveal-up delay-1">Client voices</div>
+            <h2 className="display-xl text-white text-2xl sm:text-3xl md:text-4xl fade-up delay-2">What clients say.</h2>
           </div>
-          <div className="hidden items-center gap-3 md:flex reveal-up delay-3">
+          <div className="hidden items-center gap-2 sm:gap-3 md:flex reveal-up delay-3">
             <button
               onClick={prev}
               aria-label="Previous review"
-              className="flex h-12 w-12 items-center justify-center border border-[#2a2a2a] text-white/40 transition-colors hover:border-white/40 hover:text-white"
+              className="flex h-10 sm:h-12 w-10 sm:w-12 items-center justify-center border border-[#2a2a2a] text-white/40 transition-colors hover:border-white/40 hover:text-white"
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={16} />
             </button>
             <button
               onClick={next}
               aria-label="Next review"
-              className="flex h-12 w-12 items-center justify-center border border-[#2a2a2a] text-white/40 transition-colors hover:border-white/40 hover:text-white"
+              className="flex h-10 sm:h-12 w-10 sm:w-12 items-center justify-center border border-[#2a2a2a] text-white/40 transition-colors hover:border-white/40 hover:text-white"
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={16} />
             </button>
           </div>
         </div>
-        <div ref={containerRef} className="border-t border-[#1f1f1f] pt-12 touch-pan-y select-none">
+        <div ref={containerRef} className="border-t border-[#1f1f1f] pt-12 touch-pan-y select-none" {...touchHandlers}>
           <div className="mb-6 flex gap-1" aria-label="5 stars">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star key={i} size={14} fill="#DA291C" stroke="none" aria-hidden="true" />
@@ -64,11 +64,11 @@ export default function ReviewsCarousel() {
           </div>
           <blockquote
             key={idx}
-            className={`display-lg mb-10 max-w-[900px] text-white/90 ${animClass}`}
+            className={`display-lg mb-8 sm:mb-10 max-w-[900px] text-base sm:text-lg md:text-2xl text-white/90 ${animClass}`}
           >
             &ldquo;{r.body}&rdquo;
           </blockquote>
-          <div className="label-uc text-[10px] text-white/35">
+          <div className="label-uc text-[8px] sm:text-[10px] text-white/35">
             {r.name} &middot; {r.service}
           </div>
         </div>

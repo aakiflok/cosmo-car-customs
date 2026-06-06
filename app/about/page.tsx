@@ -14,7 +14,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-canvas">
 
       {/* Hero */}
-      <section className="px-5 pb-24 pt-36 md:px-10">
+      <section className="container-pad page-hero">
         <div className="mx-auto max-w-[1440px]">
           <span className="livery-line" />
           <div className="label-uc mb-3 text-[9px] text-white/30">About Cosmo Car Customs</div>
@@ -29,7 +29,7 @@ export default function AboutPage() {
       </section>
 
       {/* Editorial split */}
-      <section className="hairline px-5 py-24 md:px-10">
+      <section className="hairline container-pad section-pad">
         <div className="mx-auto max-w-[1440px]">
           <div className="grid gap-px bg-[#1f1f1f] lg:grid-cols-2">
             <div className="relative min-h-[400px] overflow-hidden bg-canvas md:min-h-[580px]">
@@ -72,7 +72,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="hairline bg-[#0d0d0d] px-5 py-24 md:px-10">
+      <section className="hairline bg-[#0d0d0d] container-pad section-pad">
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-14">
             <span className="livery-line" />
@@ -96,7 +96,7 @@ export default function AboutPage() {
       </section>
 
       {/* Process */}
-      <section className="hairline px-5 py-24 md:px-10">
+      <section className="hairline container-pad section-pad">
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-14">
             <span className="livery-line" />
@@ -116,7 +116,7 @@ export default function AboutPage() {
       </section>
 
       {/* Location */}
-      <section className="hairline bg-[#0d0d0d] px-5 py-24 md:px-10">
+      <section className="hairline bg-[#0d0d0d] container-pad section-pad">
         <div className="mx-auto max-w-[1440px] grid gap-12 lg:grid-cols-2 lg:items-center">
           <div>
             <span className="livery-line" />
