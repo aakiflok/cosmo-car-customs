@@ -2,16 +2,15 @@ import type { Metadata } from 'next';
 import ScrollReveal      from '@/components/layout/ScrollReveal';
 import HeroBand          from '@/components/sections/HeroBand';
 import TrustStrip        from '@/components/sections/TrustStrip';
-import BrandStrip        from '@/components/sections/BrandStrip';
 import ServicesGrid      from '@/components/sections/ServicesGrid';
 import BeforeAfterBand   from '@/components/sections/BeforeAfterBand';
-import AboutBand         from '@/components/sections/AboutBand';
 import ProcessSteps      from '@/components/sections/ProcessSteps';
+import BrandStrip        from '@/components/sections/BrandStrip';
+import AboutBand         from '@/components/sections/AboutBand';
 import GalleryMosaic     from '@/components/sections/GalleryMosaic';
 import PackageTable      from '@/components/sections/PackageTable';
 import FinishShowcase    from '@/components/sections/FinishShowcase';
 import TestimonialsAuto  from '@/components/sections/TestimonialsAuto';
-import ReviewsCarousel   from '@/components/sections/ReviewsCarousel';
 import FAQTeaser         from '@/components/sections/FAQTeaser';
 import WarrantyBadge     from '@/components/sections/WarrantyBadge';
 import CTABand           from '@/components/sections/CTABand';
@@ -66,20 +65,47 @@ export default function HomePage() {
   return (
     <>
       <ScrollReveal />
+
+      {/* 1. Hook — full viewport cinematic hero */}
       <HeroBand />
+
+      {/* 2. Proof — instant credibility */}
       <TrustStrip />
-      <BrandStrip />
+
+      {/* 3. Services — what we do */}
       <ServicesGrid />
+
+      {/* 4. Results — show the work (SINGLE compact panel) */}
       <BeforeAfterBand />
-      <AboutBand />
+
+      {/* 5. Process — how it works */}
       <ProcessSteps />
+
+      {/* 6. Trust — who backs us */}
+      <BrandStrip />
+
+      {/* 7. Story — who we are */}
+      <AboutBand />
+
+      {/* 8. Gallery — visual proof */}
       <GalleryMosaic />
+
+      {/* 9. Packages — what it costs */}
       <PackageTable packages={HOME_PACKAGES} />
+
+      {/* 10. Technology — ceramic showcase */}
       <FinishShowcase />
+
+      {/* 11. Social proof — testimonials */}
       <TestimonialsAuto />
-      <ReviewsCarousel />
+
+      {/* 12. FAQ — handle objections */}
       <FAQTeaser />
+
+      {/* 13. Guarantee — remove risk */}
       <WarrantyBadge />
+
+      {/* 14. CTA — book now */}
       <CTABand />
     </>
   );
