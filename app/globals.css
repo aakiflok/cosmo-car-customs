@@ -49,11 +49,9 @@
   --dur-page:    900ms;
 }
 
-/* ─── Reset ───────────────────────────────────────────────── */
-/* box-sizing on everything including pseudo-elements */
-*, *::before, *::after { box-sizing: border-box; }
-/* margin/padding reset on real elements only — never touch ::before/::after */
-* { margin: 0; padding: 0; }
+/* ─── Base ────────────────────────────────────────────────── */
+/* Tailwind preflight (via @import "tailwindcss") already handles
+   box-sizing, margin and padding resets — no custom * reset needed. */
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   background: var(--canvas);
