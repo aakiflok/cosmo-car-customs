@@ -44,7 +44,7 @@ export default function HeroBand() {
         scrollTrigger: { trigger: wrapRef.current, start: 'top top', end: 'bottom top', scrub: true },
       });
       gsap.to(contentRef.current, {
-        yPercent: -15, ease: 'none',
+        yPercent: -10, ease: 'none',
         scrollTrigger: { trigger: wrapRef.current, start: 'top top', end: 'bottom top', scrub: true },
       });
     }, wrapRef);
@@ -54,7 +54,7 @@ export default function HeroBand() {
   return (
     <section
       ref={wrapRef}
-      className="relative flex min-h-[100svh] w-full items-end overflow-hidden bg-black"
+      className="relative flex min-h-[100svh] w-full flex-col justify-end overflow-hidden bg-black"
       aria-label="Hero"
     >
       {/* BG image */}
@@ -65,8 +65,8 @@ export default function HeroBand() {
           className="object-cover object-center"
           sizes="100vw"
         />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(10,10,10,0.88) 0%, rgba(10,10,10,0.60) 50%, rgba(10,10,10,0.30) 100%)' }} />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.5) 40%, transparent 75%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.65) 50%, rgba(10,10,10,0.35) 100%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.6) 30%, transparent 65%)' }} />
       </div>
 
       {/* Particles */}
@@ -74,25 +74,23 @@ export default function HeroBand() {
         <HeroParticles />
       </div>
 
-      {/* Left red accent */}
+      {/* Left red accent bar */}
       <div className="absolute left-0 top-0 h-full w-[3px] bg-rossa z-20" aria-hidden="true" />
 
-      {/* Content — full width, symmetric padding matching nav */}
+      {/* Content — sits in lower third of screen */}
       <div ref={contentRef} className="relative z-30 w-full will-change-transform">
-        <div className="w-full px-6 sm:px-10 lg:px-16 pb-16 pt-36 md:pb-24 md:pt-44">
+        <div className="w-full pl-10 pr-6 sm:pl-14 sm:pr-10 lg:pl-20 lg:pr-16 pb-20 pt-32 md:pb-28">
 
           {/* Eyebrow */}
-          <div className="hero-fade opacity-0 translate-y-6 mb-10 flex items-center gap-4">
+          <div className="hero-fade opacity-0 translate-y-6 mb-8 flex items-center gap-4">
             <span className="block h-[1px] w-10 bg-rossa" />
             <span className="label-uc text-[10px] text-white/50 tracking-[0.2em]">
               {BUSINESS.googleRating} Google &middot; {BUSINESS.reviewCount} Reviews &middot; Mississauga
             </span>
           </div>
 
-          {/* Two-column — heading left, copy+CTA right */}
+          {/* Two-column grid */}
           <div className="grid lg:grid-cols-2 lg:items-end gap-10 lg:gap-20 mb-16 lg:mb-20">
-
-            {/* H1 */}
             <div>
               <h1
                 className="hero-clip display-mega text-white opacity-0 leading-[0.92]"
@@ -103,8 +101,6 @@ export default function HeroBand() {
                 <em className="text-white/80">Is Everything.</em>
               </h1>
             </div>
-
-            {/* Tagline + CTAs */}
             <div className="flex flex-col gap-8 lg:pb-2">
               <p
                 className="hero-clip text-[15px] leading-8 text-white/60 opacity-0 max-w-[480px]"
@@ -124,12 +120,12 @@ export default function HeroBand() {
             </div>
           </div>
 
-          {/* Stats row */}
+          {/* Stats */}
           <div className="hero-fade opacity-0 translate-y-6 border-t border-white/10 pt-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
             {[
               [BUSINESS.googleRating,        'Google Rating'      ],
               ['200+',                         'Five Star Reviews' ],
-              [BUSINESS.yearsExperience + '+', 'Years Experience'  ],
+              [BUSINESS.yearsExperience,       'Years Experience'  ],
               ['500+',                         'Vehicles Protected'],
             ].map(([v, l]) => (
               <div key={String(l)}>
