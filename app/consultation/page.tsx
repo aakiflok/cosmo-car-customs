@@ -33,7 +33,7 @@ export default function ConsultationPage() {
 
   return (
     <div className="min-h-screen bg-canvas container-pad page-hero pb-24">
-      <div className="mx-auto max-w-[680px]">
+      <div className="max-w-[680px]">
         {!submitted ? (
           <>
             <span className="livery-line" />
@@ -128,9 +128,9 @@ export default function ConsultationPage() {
               We&rsquo;ll be in touch shortly{contact.name ? `, ${contact.name}` : ''}.
             </h2>
             <p className="mb-10 text-[14px] leading-7 text-white/50">
-              Our team typically responds within a few hours during business hours. In the meantime, explore our work.
+              Our team typically responds within a few hours during business hours.
             </p>
-            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <div className="flex flex-col items-center gap-4 sm:flex-row">
               <Link href="/gallery" className="btn-primary"><span>View Gallery</span></Link>
               <Link href="/#services" className="btn-outline">Explore Services</Link>
             </div>
