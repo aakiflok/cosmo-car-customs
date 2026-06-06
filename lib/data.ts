@@ -106,6 +106,8 @@ export const BUSINESS = {
   phone: '905-971-8186',
   phone2: '647-643-0187',
   address: '1380 Cardiff Blvd, Unit 9, Mississauga, ON L5S 1P9',
+  hours: 'Mon–Sat: 8am – 6pm',
+  email: 'info@cosmocarcustoms.com',
   googleRating: '4.9',
   reviewCount: '250+',
   yearsExperience: '5+',
