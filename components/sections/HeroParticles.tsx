@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
@@ -12,108 +11,115 @@ export default function HeroParticles() {
 
     const container = containerRef.current;
     const isMobile = window.innerWidth < 768;
-    const particleCount = isMobile ? 600 : 2000;
+    const COUNT = isMobile ? 600 : 1800;
 
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0a0a0a, 0.002);
-
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    /* ── Scene ────────────────────────────────── */
+    const scene    = new THREE.Scene();
+    const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 30;
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const colors = new Float32Array(particleCount * 3);
+    /* ── Circular sprite texture ──────────────── */
+    const canvas2d = document.createElement('canvas');
+    canvas2d.width  = 64;
+    canvas2d.height = 64;
+    const ctx = canvas2d.getContext('2d')!;
+    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gradient.addColorStop(0,   'rgba(255,255,255,1)');
+    gradient.addColorStop(0.4, 'rgba(255,255,255,0.6)');
+    gradient.addColorStop(1,   'rgba(255,255,255,0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 64, 64);
+    const sprite = new THREE.CanvasTexture(canvas2d);
 
-    const color1 = new THREE.Color('#DA291C'); // rossa
-    const color2 = new THREE.Color('#ffffff'); // white
+    /* ── Geometry ─────────────────────────────── */
+    const geometry  = new THREE.BufferGeometry();
+    const positions = new Float32Array(COUNT * 3);
+    const speeds    = new Float32Array(COUNT);
+    const offsets   = new Float32Array(COUNT);
 
-    for (let i = 0; i < particleCount * 3; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 100;
-      positions[i + 1] = (Math.random() - 0.5) * 100;
-      positions[i + 2] = (Math.random() - 0.5) * 100;
-
-      const mixedColor = color1.clone().lerp(color2, Math.random());
-      colors[i] = mixedColor.r;
-      colors[i + 1] = mixedColor.g;
-      colors[i + 2] = mixedColor.b;
+    for (let i = 0; i < COUNT; i++) {
+      positions[i * 3]     = (Math.random() - 0.5) * 120;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 80;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 60;
+      speeds[i]  = 0.3 + Math.random() * 0.7;
+      offsets[i] = Math.random() * Math.PI * 2;
     }
-
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
+    /* ── Material ─────────────────────────────── */
     const material = new THREE.PointsMaterial({
-      size: isMobile ? 0.15 : 0.1,
-      vertexColors: true,
+      size:        isMobile ? 0.5 : 0.4,
+      map:         sprite,
       transparent: true,
-      opacity: 0.8,
-      blending: THREE.AdditiveBlending,
+      opacity:     0.55,
+      depthWrite:  false,
+      blending:    THREE.AdditiveBlending,
+      sizeAttenuation: true,
     });
 
     const particles = new THREE.Points(geometry, material);
     scene.add(particles);
 
-    let mouseX = 0;
-    let mouseY = 0;
-    let targetX = 0;
-    let targetY = 0;
-
+    /* ── Mouse parallax ───────────────────────── */
+    let targetX = 0, targetY = 0;
     const onPointerMove = (e: PointerEvent) => {
-      mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
-      mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
+      targetX = (e.clientX / window.innerWidth  - 0.5) * 2;
+      targetY = (e.clientY / window.innerHeight - 0.5) * 2;
     };
-
     window.addEventListener('pointermove', onPointerMove);
 
+    /* ── Resize ───────────────────────────────── */
     const onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
-
     window.addEventListener('resize', onResize);
 
+    /* ── Animation loop ───────────────────────── */
     let frameId: number;
     let time = 0;
+    let camX = 0, camY = 0;
 
     const animate = () => {
-      time += 0.001;
-      targetX += (mouseX - targetX) * 0.05;
-      targetY += (mouseY - targetY) * 0.05;
+      time += 0.0008;
+      const pos = geometry.attributes.position.array as Float32Array;
 
-      particles.rotation.y += 0.0005;
-      particles.rotation.x += 0.0002;
-      
-      camera.position.x += (targetX * 5 - camera.position.x) * 0.05;
-      camera.position.y += (-targetY * 5 - camera.position.y) * 0.05;
-      camera.lookAt(scene.position);
-
-      const positions = particles.geometry.attributes.position.array as Float32Array;
-      for (let i = 0; i < particleCount * 3; i += 3) {
-        positions[i + 1] += Math.sin(time + positions[i]) * 0.01;
+      for (let i = 0; i < COUNT; i++) {
+        pos[i * 3]     += Math.sin(time * speeds[i] + offsets[i])       * 0.003;
+        pos[i * 3 + 1] += Math.cos(time * speeds[i] * 0.7 + offsets[i]) * 0.002;
       }
-      particles.geometry.attributes.position.needsUpdate = true;
+      geometry.attributes.position.needsUpdate = true;
+
+      // Gentle camera drift on mouse
+      camX += (targetX * 3 - camX) * 0.04;
+      camY += (-targetY * 3 - camY) * 0.04;
+      camera.position.x = camX;
+      camera.position.y = camY;
+      camera.lookAt(scene.position);
 
       renderer.render(scene, camera);
       frameId = requestAnimationFrame(animate);
     };
-
     animate();
 
     return () => {
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', onResize);
       cancelAnimationFrame(frameId);
-      container.removeChild(renderer.domElement);
+      if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);
       geometry.dispose();
       material.dispose();
+      sprite.dispose();
       renderer.dispose();
     };
   }, []);
 
-  return <div ref={containerRef} className="absolute inset-0 pointer-events-none opacity-60 mix-blend-screen" />;
+  return <div ref={containerRef} className="absolute inset-0 pointer-events-none" />;
 }

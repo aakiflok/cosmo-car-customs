@@ -7,15 +7,13 @@ import { gsap } from 'gsap';
 import { useMagnetic } from '@/hooks/useMagnetic';
 import { BUSINESS } from '@/lib/data';
 
-// Dynamically import Three.js particles to keep initial bundle small
 const HeroParticles = dynamic(() => import('./HeroParticles'), { ssr: false });
 
 export default function HeroBand() {
-  const wrapRef = useRef<HTMLElement>(null);
-  const btn1Ref = useRef<HTMLAnchorElement>(null);
-  const btn2Ref = useRef<HTMLAnchorElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const fgRef = useRef<HTMLDivElement>(null);
+  const wrapRef   = useRef<HTMLElement>(null);
+  const btn1Ref   = useRef<HTMLAnchorElement>(null);
+  const btn2Ref   = useRef<HTMLAnchorElement>(null);
+  const bgRef     = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -23,151 +21,94 @@ export default function HeroBand() {
   useMagnetic(btn2Ref as React.RefObject<HTMLElement>);
 
   useEffect(() => {
-    // Wait for preloader to dispatch complete event
     const handleReady = () => setIsReady(true);
     window.addEventListener('preloaderComplete', handleReady);
-    
-    // Fallback if event is missed
     const t = setTimeout(() => setIsReady(true), 2800);
-    
-    return () => {
-      window.removeEventListener('preloaderComplete', handleReady);
-      clearTimeout(t);
-    };
+    return () => { window.removeEventListener('preloaderComplete', handleReady); clearTimeout(t); };
   }, []);
 
   useEffect(() => {
     if (!isReady || !wrapRef.current) return;
-    
-    // Entrance animations sequence
     const ctx = gsap.context(() => {
-      gsap.to('.clip-reveal', {
-        clipPath: 'inset(0 0 0% 0)',
-        opacity: 1,
-        duration: 1.2,
-        stagger: 0.15,
-        ease: 'power4.out',
-      });
-      gsap.to('.fade-up', {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        stagger: 0.1,
-        ease: 'power3.out',
-        delay: 0.4
-      });
+      gsap.to('.hero-clip', { clipPath: 'inset(0 0 0% 0)', opacity: 1, duration: 1.2, stagger: 0.15, ease: 'power4.out' });
+      gsap.to('.hero-fade', { y: 0, opacity: 1, duration: 1, stagger: 0.1, ease: 'power3.out', delay: 0.4 });
     }, wrapRef);
-    
     return () => ctx.revert();
   }, [isReady]);
 
-  // 4-layer Parallax
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    
     const ctx = gsap.context(() => {
-      // Background layer (slowest)
       gsap.to(bgRef.current, {
-        yPercent: 30,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: wrapRef.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-        }
+        yPercent: 25, ease: 'none',
+        scrollTrigger: { trigger: wrapRef.current, start: 'top top', end: 'bottom top', scrub: true },
       });
-      
-      // Foreground gradient layer
-      gsap.to(fgRef.current, {
-        yPercent: 15,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: wrapRef.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-        }
-      });
-
-      // Text content layer (fastest)
       gsap.to(contentRef.current, {
-        yPercent: -20,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: wrapRef.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-        }
+        yPercent: -15, ease: 'none',
+        scrollTrigger: { trigger: wrapRef.current, start: 'top top', end: 'bottom top', scrub: true },
       });
     }, wrapRef);
-
     return () => ctx.revert();
   }, []);
 
   return (
     <section ref={wrapRef} className="relative flex min-h-[100svh] items-end overflow-hidden bg-black" aria-label="Hero">
 
-      {/* Layer 1: Background image — right half only on desktop, full on mobile */}
-      <div ref={bgRef} className="absolute inset-0 scale-105 origin-center will-change-transform">
+      {/* BG image — unoptimized so external URL renders */}
+      <div ref={bgRef} className="absolute inset-0 scale-110 origin-center will-change-transform">
         <Image
           src="https://images.unsplash.com/photo-1494976688153-cd3554744ab4?auto=format&fit=crop&w=1800&q=85"
-          alt="" role="presentation" fill
-          className="object-cover object-center opacity-90"
+          alt="" role="presentation" fill unoptimized
+          className="object-cover object-center"
           priority sizes="100vw"
         />
-        {/* Left-side darkening so text stays readable */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/20" />
-        {/* Bottom fade */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+        {/* Gradient overlays — lightened so image is visible */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(10,10,10,0.82) 0%, rgba(10,10,10,0.55) 55%, rgba(10,10,10,0.25) 100%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.5) 35%, transparent 70%)' }} />
       </div>
 
-      {/* Layer 2: Subtle particles overlay */}
-      <div className="absolute inset-0 z-0 opacity-40">
+      {/* Particles */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
         <HeroParticles />
       </div>
 
-      {/* Red accent bar */}
+      {/* Red left accent bar */}
       <div className="absolute left-0 top-0 h-full w-[3px] bg-rossa z-20" aria-hidden="true" />
 
-      {/* Layer 3: Content — two-column layout */}
+      {/* Content */}
       <div ref={contentRef} className="relative z-30 w-full will-change-transform">
         <div className="mx-auto max-w-[1440px] container-pad pb-16 pt-36 md:pb-24 md:pt-44">
 
-          {/* Top label */}
-          <div className="fade-up translate-y-6 opacity-0 mb-10 flex items-center gap-4">
+          {/* Eyebrow */}
+          <div className="hero-fade opacity-0 translate-y-6 mb-10 flex items-center gap-4">
             <span className="block h-[1px] w-10 bg-rossa" />
             <span className="label-uc text-[10px] text-white/50 tracking-[0.2em]">
               {BUSINESS.googleRating} Google &middot; {BUSINESS.reviewCount} Reviews &middot; Mississauga
             </span>
           </div>
 
-          {/* Main content grid: heading left, tagline+CTA right */}
+          {/* Two-column grid */}
           <div className="grid lg:grid-cols-[1fr_420px] lg:items-end gap-10 lg:gap-16 mb-16 lg:mb-20">
 
-            {/* Left: Big heading */}
             <div>
-              <div className="overflow-hidden">
-                <h1
-                  className="clip-reveal display-mega text-white opacity-0 leading-[0.92]"
-                  style={{ clipPath: 'inset(100% 0 0% 0)' }}
-                >
-                  The Detail
-                  <br />
-                  <em className="text-white/80">Is Everything.</em>
-                </h1>
-              </div>
+              <h1
+                className="hero-clip display-mega text-white opacity-0 leading-[0.92]"
+                style={{ clipPath: 'inset(100% 0 0% 0)' }}
+              >
+                The Detail
+                <br />
+                <em className="text-white/80">Is Everything.</em>
+              </h1>
             </div>
 
-            {/* Right: tagline + CTAs */}
             <div className="flex flex-col gap-8 lg:pb-2">
-              <div className="overflow-hidden">
-                <p className="clip-reveal text-[15px] leading-8 text-white/55 opacity-0 max-w-[400px]" style={{ clipPath: 'inset(100% 0 0% 0)' }}>
-                  Mississauga&rsquo;s most obsessive detailing studio — ceramic coating, PPF, paint correction, and tinting for drivers who demand perfection.
-                </p>
-              </div>
-              <div className="fade-up translate-y-6 opacity-0 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <p
+                className="hero-clip text-[15px] leading-8 text-white/60 opacity-0 max-w-[400px]"
+                style={{ clipPath: 'inset(100% 0 0% 0)' }}
+              >
+                Mississauga&rsquo;s most obsessive detailing studio — ceramic coating, PPF, paint correction, and tinting for drivers who demand perfection.
+              </p>
+              <div className="hero-fade opacity-0 translate-y-6 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link ref={btn1Ref} href="/consultation" className="btn-primary magnetic" data-cursor="link">
                   <span>Request Consultation</span>
                 </Link>
@@ -178,13 +119,13 @@ export default function HeroBand() {
             </div>
           </div>
 
-          {/* Stats strip — full width */}
-          <div className="fade-up translate-y-6 opacity-0 border-t border-white/10 pt-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
+          {/* Stats */}
+          <div className="hero-fade opacity-0 translate-y-6 border-t border-white/10 pt-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
             {[
-              [BUSINESS.googleRating, 'Google Rating'],
-              ['200+', 'Five Star Reviews'],
-              [BUSINESS.yearsExperience + '+', 'Years Experience'],
-              ['500+', 'Vehicles Protected'],
+              [BUSINESS.googleRating,          'Google Rating'],
+              ['200+',                           'Five Star Reviews'],
+              [BUSINESS.yearsExperience + '+',   'Years Experience'],
+              ['500+',                           'Vehicles Protected'],
             ].map(([v, l]) => (
               <div key={String(l)}>
                 <div className="text-[2rem] sm:text-[2.5rem] font-bold font-barlow tracking-tight text-white leading-none">{v}</div>
@@ -196,7 +137,7 @@ export default function HeroBand() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-10 right-10 z-30 hidden flex-col items-center gap-4 md:flex fade-up translate-y-8 opacity-0 delay-9" aria-hidden="true">
+      <div className="absolute bottom-10 right-10 z-30 hidden flex-col items-center gap-4 md:flex" aria-hidden="true">
         <span className="label-uc text-[9px] text-white/30" style={{ writingMode: 'vertical-rl' }}>Scroll</span>
         <span className="pulse-indicator block h-16 w-[1px] bg-gradient-to-b from-white/40 to-transparent" />
       </div>
