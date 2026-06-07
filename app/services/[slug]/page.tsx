@@ -36,7 +36,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
           <div className="hero-scrim absolute inset-0" />
         </div>
         <div className="absolute left-0 top-0 h-full w-[3px] bg-rossa opacity-90" aria-hidden="true" />
-        <div className="relative z-10 w-full pl-10 pr-6 sm:pl-14 sm:pr-10 lg:pl-20 lg:pr-16 page-hero pb-16">
+        <div className="relative z-10 w-full px-6 sm:px-10 lg:px-16 page-hero pb-16">
           <span className="livery-line" />
           <div className="label-uc mb-3 text-[9px] text-white/40">{service.number} &mdash; Service</div>
           <h1 className="display-xl mb-4 text-white max-w-[700px]">{service.name}</h1>
@@ -45,14 +45,14 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       </section>
 
       {/* Description + outcome */}
-      <section className="hairline container-pad section-pad">
-        <div className="grid gap-px bg-[#1f1f1f] lg:grid-cols-[1.4fr_1fr]">
+      <section className="border-t border-hairline w-full px-6 sm:px-10 lg:px-16 section-pad">
+        <div className="grid gap-px bg-hairline lg:grid-cols-[1.4fr_1fr]">
           <div className="bg-canvas p-10 md:p-16">
             <span className="livery-line" />
             <div className="label-uc mb-3 text-[9px] text-white/30">About this service</div>
             <p className="text-[15px] leading-8 text-white/60">{service.description}</p>
           </div>
-          <div className="bg-[#0d0d0d] p-10 md:p-16">
+          <div className="bg-elevated p-10 md:p-16">
             <span className="livery-line" />
             <div className="label-uc mb-3 text-[9px] text-white/30">What you get</div>
             <p className="text-[15px] leading-8 text-white/60">{service.outcome}</p>
@@ -64,15 +64,15 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       </section>
 
       {/* Packages */}
-      <section className="hairline bg-[#0d0d0d] container-pad section-pad">
+      <section className="border-t border-hairline bg-elevated w-full px-6 sm:px-10 lg:px-16 section-pad">
         <div className="mb-14">
           <span className="livery-line" />
           <div className="label-uc mb-3 text-[9px] text-white/30">Packages</div>
           <h2 className="display-xl text-white">Choose your level of protection.</h2>
         </div>
-        <div className="grid gap-px bg-[#1f1f1f] sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-px bg-hairline sm:grid-cols-2 lg:grid-cols-3">
           {service.packages.map((pkg, i) => (
-            <div key={pkg.name} className="bg-[#0d0d0d] p-10" style={{ transitionDelay: `${i * 0.08}s` }}>
+            <div key={pkg.name} className="bg-elevated p-10" style={{ transitionDelay: `${i * 0.08}s` }}>
               <div className="label-uc mb-6 text-[9px] text-rossa">{pkg.duration}</div>
               <h3 className="display-md mb-6 text-white">{pkg.name}</h3>
               <ul className="space-y-3">
@@ -90,13 +90,13 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
 
       {/* FAQs */}
       {service.faqs.length > 0 && (
-        <section className="hairline container-pad section-pad">
+        <section className="border-t border-hairline w-full px-6 sm:px-10 lg:px-16 section-pad">
           <div className="mb-14 max-w-[860px]">
             <span className="livery-line" />
             <div className="label-uc mb-3 text-[9px] text-white/30">Common questions</div>
             <h2 className="display-xl text-white">Frequently asked.</h2>
           </div>
-          <div className="divide-y divide-[#1f1f1f] max-w-[860px]">
+          <div className="divide-y divide-hairline max-w-[860px]">
             {service.faqs.map(faq => (
               <div key={faq.q} className="py-8">
                 <h3 className="display-sm mb-4 text-white">{faq.q}</h3>
@@ -108,7 +108,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       )}
 
       {/* CTA */}
-      <section className="cta-red container-pad section-pad">
+      <section className="cta-red w-full px-6 sm:px-10 lg:px-16 section-pad">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="label-uc mb-3 text-[9px] text-white/60">Ready?</div>

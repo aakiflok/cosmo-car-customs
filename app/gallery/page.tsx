@@ -24,7 +24,7 @@ export default function GalleryPage() {
     <div className="min-h-screen bg-canvas">
 
       {/* Hero */}
-      <section className="container-pad page-hero">
+      <section className="w-full px-6 sm:px-10 lg:px-16 page-hero">
         <span className="livery-line" />
         <div className="label-uc mb-3 text-[9px] text-white/30">Before &amp; after</div>
         <h1 className="display-xl mb-6 text-white">The work, documented.</h1>
@@ -34,8 +34,8 @@ export default function GalleryPage() {
       </section>
 
       {/* Grid */}
-      <section className="hairline container-pad section-pad">
-        <div className="grid gap-px bg-[#1f1f1f] sm:grid-cols-2 lg:grid-cols-4">
+      <section className="border-t border-hairline w-full px-6 sm:px-10 lg:px-16 section-pad">
+        <div className="grid gap-px bg-hairline sm:grid-cols-2 lg:grid-cols-4">
           {GALLERY.map((img, i) => (
             <figure key={img.src} className="group m-0">
               <div className="relative overflow-hidden" style={{ aspectRatio: '3/4' }}>
@@ -46,7 +46,7 @@ export default function GalleryPage() {
                   loading={i < 4 ? 'eager' : 'lazy'}
                 />
               </div>
-              <figcaption className="border-t border-[#1f1f1f] bg-canvas px-5 py-4">
+              <figcaption className="border-t border-hairline bg-canvas px-5 py-4">
                 <div className="label-uc text-[9px] text-white/40">{img.label}</div>
               </figcaption>
             </figure>
