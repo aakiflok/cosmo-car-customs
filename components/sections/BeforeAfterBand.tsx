@@ -65,8 +65,8 @@ export default function BeforeAfterBand() {
 
         {/* Panel */}
         <div className="grid md:grid-cols-[3fr_1fr] gap-8 items-start">
-          {/* Lightning split slider */}
-          <div className="w-full overflow-hidden clip-reveal">
+          {/* Lightning split — no clip-reveal, images must paint immediately */}
+          <div className="w-full overflow-hidden">
             <LightningSplit
               key={active}
               beforeImg={job.beforeImg}
