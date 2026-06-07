@@ -30,6 +30,8 @@ function animateCounter(el: HTMLElement, target: number, decimals: number, suffi
   requestAnimationFrame(step);
 }
 
+const CAR_IMG = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2000&q=90';
+
 export default function HeroBand() {
   const btn1Ref  = useRef<HTMLAnchorElement>(null);
   const btn2Ref  = useRef<HTMLAnchorElement>(null);
@@ -75,13 +77,13 @@ export default function HeroBand() {
       className="relative w-full bg-[#0a0a0a] overflow-hidden"
       aria-label="Hero"
     >
-      {/* ── ABOVE FOLD: full viewport ── */}
+      {/* ── ABOVE FOLD ── */}
       <div className="relative flex min-h-[100svh] w-full items-end">
 
         {/* Full-bleed car */}
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2000&q=90"
+            src={CAR_IMG}
             alt="Dark sports car on showroom floor"
             fill
             unoptimized
@@ -91,18 +93,42 @@ export default function HeroBand() {
           />
         </div>
 
-        {/* Studio vignette — dark edges, light center */}
+        {/* Floor reflection — flipped car, masked to ~30% height at bottom */}
+        <div
+          aria-hidden="true"
+          className="absolute bottom-0 left-0 right-0 z-[5] overflow-hidden"
+          style={{ height: '32%' }}
+        >
+          {/* Flipped image */}
+          <div className="absolute inset-0" style={{ transform: 'scaleY(-1)', transformOrigin: 'bottom' }}>
+            <Image
+              src={CAR_IMG}
+              alt=""
+              fill
+              unoptimized
+              className="object-cover object-center scale-[1.02] opacity-30"
+              sizes="100vw"
+            />
+          </div>
+          {/* Fade mask: reflection dissolves upward into black */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(to bottom, rgba(10,10,10,1) 0%, rgba(10,10,10,0.4) 50%, rgba(10,10,10,0) 100%)',
+            }}
+          />
+        </div>
+
+        {/* Studio vignette */}
         <div
           className="absolute inset-0 z-10"
           style={{
-            background: [
-              'radial-gradient(ellipse 70% 60% at 50% 55%, transparent 0%, rgba(10,10,10,0.55) 60%, rgba(10,10,10,0.97) 100%)',
-            ].join(','),
+            background: 'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 0%, rgba(10,10,10,0.5) 60%, rgba(10,10,10,0.96) 100%)',
           }}
           aria-hidden="true"
         />
 
-        {/* Bottom fade into floor section */}
+        {/* Bottom fade */}
         <div
           className="absolute bottom-0 left-0 right-0 h-48 z-10"
           style={{ background: 'linear-gradient(to bottom, transparent, #0a0a0a)' }}
@@ -112,9 +138,8 @@ export default function HeroBand() {
         {/* Red left bar */}
         <div className="absolute left-0 top-0 h-full w-[3px] bg-rossa z-20" aria-hidden="true" />
 
-        {/* Copy — floats bottom-left over image */}
+        {/* Copy */}
         <div className="relative z-20 w-full px-8 sm:px-14 lg:px-20 xl:px-28 pb-20 lg:pb-28">
-
           <div data-hero-anim className="fade-up flex items-center gap-4 mb-8">
             <span className="block h-[1px] w-10 bg-rossa flex-shrink-0" />
             <span className="label-uc text-[10px] text-white/50 tracking-[0.2em]">
@@ -122,10 +147,7 @@ export default function HeroBand() {
             </span>
           </div>
 
-          <h1
-            data-hero-anim
-            className="fade-up delay-1 display-mega text-white max-w-[720px] mb-10"
-          >
+          <h1 data-hero-anim className="fade-up delay-1 display-mega text-white max-w-[720px] mb-10">
             The Detail<br />
             <em className="text-white/70">Is Everything.</em>
           </h1>
@@ -153,22 +175,17 @@ export default function HeroBand() {
 
       {/* ── BELOW FOLD: stats + body ── */}
       <div className="relative z-10 px-8 sm:px-14 lg:px-20 xl:px-28 pt-16 pb-24">
-
         <p data-hero-anim className="reveal-up text-[15px] leading-8 text-white/50 max-w-[540px] mb-16">
           Mississauga&rsquo;s most obsessive detailing studio — ceramic coating,
           PPF, paint correction, and tinting for drivers who demand perfection.
         </p>
-
         <div
           ref={statsRef}
           className="border-t border-white/10 pt-10 grid grid-cols-2 sm:grid-cols-4 gap-10"
         >
           {STATS.map(({ value, label }) => (
             <div key={label}>
-              <div
-                data-stat-val={value}
-                className="text-[2.5rem] font-bold font-barlow tracking-tight text-white leading-none"
-              >
+              <div data-stat-val={value} className="text-[2.5rem] font-bold font-barlow tracking-tight text-white leading-none">
                 {value}
               </div>
               <div className="label-uc mt-2 text-[9px] text-white/35">{label}</div>
