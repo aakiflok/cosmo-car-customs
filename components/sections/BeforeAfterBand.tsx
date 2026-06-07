@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
+import LightningSplit from '@/components/ui/LightningSplit';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 const JOBS = [
@@ -65,10 +65,17 @@ export default function BeforeAfterBand() {
 
         {/* Panel */}
         <div className="grid md:grid-cols-[3fr_1fr] gap-8 items-start">
-          {/* Slider — clip-reveal wipes in from bottom on scroll */}
+          {/* Lightning split slider */}
           <div className="w-full overflow-hidden clip-reveal">
-            <BeforeAfterSlider key={active} beforeImg={job.beforeImg} afterImg={job.afterImg} />
+            <LightningSplit
+              key={active}
+              beforeImg={job.beforeImg}
+              afterImg={job.afterImg}
+              beforeLabel="Before"
+              afterLabel="After"
+            />
           </div>
+
           <div className="flex flex-col gap-6 pt-2">
             <div className="reveal-up delay-1">
               <p className="label-uc text-[9px] text-white/40 mb-2">Vehicle</p>
