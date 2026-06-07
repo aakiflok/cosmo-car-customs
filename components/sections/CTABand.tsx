@@ -14,13 +14,15 @@ export default function CTABand() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 lg:justify-end">
-            <Link href="/consultation" className="btn-primary" style={{ background: '#fff', color: '#DA291C', borderColor: '#fff' }}>
+            <Link
+              href="/consultation"
+              className="btn-primary !bg-white !text-rossa !border-white hover:!bg-white/90"
+            >
               <span>Request Consultation</span>
             </Link>
             <a
               href={`tel:${BUSINESS.phone.replace(/-/g,'')}`}
-              className="btn-outline"
-              style={{ borderColor: 'rgba(255,255,255,0.5)', color: '#fff' }}
+              className="btn-outline !border-white/50 !text-white hover:!border-white"
             >
               Call {BUSINESS.phone}
             </a>
