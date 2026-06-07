@@ -1,37 +1,30 @@
 'use client';
 import Link from 'next/link';
-import { Phone } from 'lucide-react';
 import { BUSINESS } from '@/lib/data';
-import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 export default function CTABand() {
-  useScrollReveal();
-
   return (
-    <section className="cta-red section-pad container-pad overflow-hidden" aria-labelledby="cta-heading">
-      <div className="mx-auto max-w-[1440px]">
-        <div className="grid gap-8 sm:gap-12 lg:grid-cols-[1fr_auto] lg:items-center">
+    <section aria-label="Book now" className="w-full bg-rossa section-pad">
+      <div className="w-full px-6 sm:px-10 lg:px-16">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
+
           <div>
-            <div className="label-uc mb-3 sm:mb-4 text-[9px] text-white/60 reveal-up">Ready to start?</div>
-            <h2
-              id="cta-heading"
-              className="display-xl max-w-[700px] text-white text-2xl sm:text-3xl md:text-4xl clip-reveal"
-            >
-              Your vehicle deserves showroom-level care. Book today.
-            </h2>
+            <div className="label-uc mb-4 text-[9px] text-white/60">Ready to protect your vehicle?</div>
+            <h2 className="display-lg text-white">Book your consultation today.</h2>
           </div>
-          <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row lg:flex-col xl:flex-row reveal-up delay-3">
+
+          <div className="flex flex-col sm:flex-row gap-4 lg:justify-end">
             <Link
               href="/consultation"
-              className="btn-outline border-white/40 text-white transition-colors hover:border-white hover:bg-white hover:text-black pulse-cta"
+              className="btn-primary !bg-white !text-rossa !border-white hover:!bg-white/90"
             >
-              Request Consultation
+              <span>Request Consultation</span>
             </Link>
             <a
-              href={`tel:${BUSINESS.phone.replace(/-/g, '')}`}
-              className="btn-ghost flex items-center gap-2 text-white/70 hover:text-white text-sm"
+              href={`tel:${BUSINESS.phone.replace(/-/g,'')}`}
+              className="btn-outline !border-white/50 !text-white hover:!border-white"
             >
-              <Phone size={13} /> {BUSINESS.phone}
+              Call {BUSINESS.phone}
             </a>
           </div>
         </div>

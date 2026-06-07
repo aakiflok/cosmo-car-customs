@@ -1,100 +1,105 @@
 'use client';
+import { useState } from 'react';
+import LightningSplit from '@/components/ui/LightningSplit';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 
-import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
-import { SectionLabel } from '@/components/ui/SectionLabel';
-import { Badge } from '@/components/ui/Badge';
-
-interface BeforeAfterJob {
-  title: string;
-  service: string;
-  vehicle: string;
-  beforeImg: string;
-  afterImg: string;
-  timeTaken: string;
-  productsUsed: string[];
-}
-
-const SHOWCASE_JOBS: BeforeAfterJob[] = [
+const JOBS = [
   {
-    title: 'Black BMW M3 - Full Correction + Ceramic',
-    service: 'Paint Correction + Ceramic Coating',
+    label: 'Ceramic + Correction',
     vehicle: '2023 BMW M3',
-    beforeImg: 'https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=1400&q=80',
-    afterImg: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=80',
+    service: 'Paint Correction + Ceramic Coating',
     timeTaken: '2 days',
-    productsUsed: ['Gyeon', 'XPEL', '3M'],
+    products: ['Gyeon', 'XPEL', '3M'],
+    beforeImg: 'https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=1400&q=80',
+    afterImg:  'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=80',
   },
   {
-    title: 'White Range Rover - PPF Full Front + Tint',
-    service: 'Paint Protection Film + Window Tint',
+    label: 'PPF + Tint',
     vehicle: '2022 Range Rover',
-    beforeImg: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1400&q=80',
-    afterImg: 'https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=1400&q=80',
+    service: 'Paint Protection Film + Window Tint',
     timeTaken: '1 day',
-    productsUsed: ['XPEL', 'SunTek'],
+    products: ['XPEL', 'SunTek'],
+    beforeImg: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1400&q=80',
+    afterImg:  'https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=1400&q=80',
   },
   {
-    title: 'Grey Porsche 911 - Premium Protection',
+    label: 'Full PPF Stack',
+    vehicle: '2023 Porsche 911',
     service: 'Full PPF + Multi-Coat Ceramic',
-    vehicle: '2023 Porsche 911 Carrera',
-    beforeImg: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=80',
-    afterImg: 'https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=1400&q=80',
     timeTaken: '3 days',
-    productsUsed: ['XPEL', 'Gtechniq', 'Gyeon'],
+    products: ['XPEL', 'Gtechniq', 'Gyeon'],
+    beforeImg: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=80',
+    afterImg:  'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1400&q=80',
   },
 ];
 
 export default function BeforeAfterBand() {
-  return (
-    <section className="w-full bg-canvas section-pad border-t border-hairline">
-      <div className="mx-auto max-w-[1440px] container-pad">
-        <SectionLabel>Real Results</SectionLabel>
-        <h2 className="display-lg mb-24">See the transformation.</h2>
+  const [active, setActive] = useState(0);
+  useScrollReveal();
+  const job = JOBS[active];
 
-        <div className="space-y-32 md:space-y-48">
-          {SHOWCASE_JOBS.map((job, idx) => (
-            <div
-              key={idx}
-              className={`grid gap-12 md:gap-20 items-center ${
-                idx % 2 === 0 ? 'md:grid-cols-[1fr_1fr]' : 'md:grid-cols-[1fr_1fr] md:[&>*:nth-child(1)]:order-2'
+  return (
+    <section className="w-full bg-canvas border-t border-hairline section-pad">
+      <div className="w-full px-6 sm:px-10 lg:px-16">
+
+        <div className="mb-12">
+          <span className="livery-line reveal-up" />
+          <div className="label-uc text-[9px] text-white/40 mb-4 reveal-up delay-1">Real Results</div>
+          <h2 className="display-lg text-white reveal-up delay-2">See the transformation.</h2>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-0 mb-10 border border-hairline w-fit reveal-up delay-3">
+          {JOBS.map((j, i) => (
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              className={`px-5 py-3 label-uc text-[9px] transition-all duration-200 ${
+                active === i ? 'bg-rossa text-white' : 'text-white/40 hover:text-white hover:bg-white/5'
               }`}
             >
-              {/* Slider */}
-              <div className="relative aspect-video overflow-hidden">
-                <BeforeAfterSlider beforeImg={job.beforeImg} afterImg={job.afterImg} />
-              </div>
+              {j.label}
+            </button>
+          ))}
+        </div>
 
-              {/* Description */}
-              <div className="space-y-6">
-                <div>
-                  <h3 className="display-md mb-2">{job.title}</h3>
-                  <p className="text-white/50 text-14px">{job.vehicle}</p>
-                </div>
+        {/* Panel — stacks on mobile, side-by-side on md+ */}
+        <div className="grid grid-cols-1 md:grid-cols-[3fr_1fr] gap-8 items-start">
+          <div className="w-full overflow-hidden">
+            <LightningSplit
+              key={active}
+              beforeImg={job.beforeImg}
+              afterImg={job.afterImg}
+              beforeLabel="Before"
+              afterLabel="After"
+            />
+          </div>
 
-                <div className="space-y-4 border-t border-hairline pt-6">
-                  <div>
-                    <p className="label-uc text-8px text-white/40 mb-2">Service</p>
-                    <p className="text-15px text-white">{job.service}</p>
-                  </div>
-                  <div>
-                    <p className="label-uc text-8px text-white/40 mb-2">Time taken</p>
-                    <p className="text-15px text-white">{job.timeTaken}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="label-uc text-8px text-white/40 mb-3">Products used</p>
-                  <div className="flex flex-wrap gap-2">
-                    {job.productsUsed.map((product) => (
-                      <Badge key={product} variant="dark" className="text-11px">
-                        {product}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+          <div className="flex flex-col gap-6 pt-2">
+            <div className="reveal-up delay-1">
+              <p className="label-uc text-[9px] text-white/40 mb-2">Vehicle</p>
+              <p className="text-white text-[14px] font-medium">{job.vehicle}</p>
+            </div>
+            <div className="h-px bg-hairline" />
+            <div className="reveal-up delay-2">
+              <p className="label-uc text-[9px] text-white/40 mb-2">Service</p>
+              <p className="text-white text-[14px] leading-relaxed">{job.service}</p>
+            </div>
+            <div className="h-px bg-hairline" />
+            <div className="reveal-up delay-3">
+              <p className="label-uc text-[9px] text-white/40 mb-2">Time taken</p>
+              <p className="text-white text-[14px]">{job.timeTaken}</p>
+            </div>
+            <div className="h-px bg-hairline" />
+            <div className="reveal-up delay-4">
+              <p className="label-uc text-[9px] text-white/40 mb-3">Products</p>
+              <div className="flex flex-wrap gap-2">
+                {job.products.map((p) => (
+                  <span key={p} className="label-uc text-[8px] border border-hairline px-2 py-1 text-white/60">{p}</span>
+                ))}
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>

@@ -1,29 +1,18 @@
 'use client';
 
-import { useMemo } from 'react';
-
-const BRANDS = ['Gyeon', 'IGL', 'XPEL', '3M', 'LLumar', 'Gtechniq'];
+const BRANDS = ['Gyeon', 'XPEL', 'SunTek', 'Gtechniq', '3M', 'Meguiar\'s', 'Carpro', 'Koch Chemie'];
 
 export default function BrandStrip() {
-  const repeatedBrands = useMemo(() => [...BRANDS, ...BRANDS], []);
-
   return (
-    <section className="w-full border-t border-hairline bg-[#0d0d0d] py-16 overflow-hidden" aria-label="Trusted brands">
-      <div className="mx-auto max-w-[1440px] px-5 md:px-10">
-        <p className="label-uc text-9px mb-12 text-white/40">Trusted products we use</p>
-        
-        <div className="relative flex gap-16">
-          <div className="marquee-loop flex gap-16">
-            {repeatedBrands.map((brand, idx) => (
-              <div
-                key={idx}
-                className="flex-shrink-0 w-max text-16px md:text-20px font-inter text-white/30 hover:text-white/80 transition-colors duration-300 cursor-default"
-                aria-label={brand}
-              >
-                {brand}
-              </div>
-            ))}
-          </div>
+    <section aria-label="Product brands" className="w-full bg-canvas border-t border-hairline py-10 overflow-hidden">
+      <div className="w-full px-6 sm:px-10 lg:px-16 mb-6">
+        <p className="label-uc text-[9px] text-white/30">Products we use</p>
+      </div>
+      <div className="relative overflow-hidden">
+        <div className="marquee-loop flex items-center gap-16">
+          {[...BRANDS, ...BRANDS].map((b, i) => (
+            <span key={i} className="label-uc text-[11px] text-white/35 whitespace-nowrap flex-shrink-0 tracking-[3px]">{b}</span>
+          ))}
         </div>
       </div>
     </section>

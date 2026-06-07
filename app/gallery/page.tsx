@@ -24,41 +24,36 @@ export default function GalleryPage() {
     <div className="min-h-screen bg-canvas">
 
       {/* Hero */}
-      <section className="container-pad page-hero">
-        <div className="mx-auto max-w-[1440px]">
-          <span className="livery-line" />
-          <div className="label-uc mb-3 text-[9px] text-white/30">Before &amp; after</div>
-          <h1 className="display-xl mb-6 text-white fade-up">The work, documented.</h1>
-          <p className="max-w-[480px] text-[15px] leading-7 text-white/50">
-            Every image is a real vehicle treated at Cosmo Car Customs.
-          </p>
-        </div>
+      <section className="w-full px-6 sm:px-10 lg:px-16 page-hero">
+        <span className="livery-line" />
+        <div className="label-uc mb-3 text-[9px] text-white/30">Before &amp; after</div>
+        <h1 className="display-xl mb-6 text-white">The work, documented.</h1>
+        <p className="max-w-[480px] text-[15px] leading-7 text-white/50">
+          Every image is a real vehicle treated at Cosmo Car Customs.
+        </p>
       </section>
 
       {/* Grid */}
-      <section className="hairline container-pad section-pad">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="grid gap-px bg-[#1f1f1f] sm:grid-cols-2 lg:grid-cols-4">
-            {GALLERY.map((img, i) => (
-              <figure key={img.src} className="group m-0">
-                <div className="relative overflow-hidden" style={{ aspectRatio: '3/4' }}>
-                  <Image
-                    src={img.src} alt={img.label} fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
-                    loading={i < 4 ? 'eager' : 'lazy'}
-                  />
-                </div>
-                <figcaption className="border-t border-[#1f1f1f] bg-canvas px-5 py-4">
-                  <div className="label-uc text-[9px] text-white/40">{img.label}</div>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-
-          <div className="mt-16 text-center">
-            <Link href="/consultation" className="btn-primary"><span>Book a Service</span></Link>
-          </div>
+      <section className="border-t border-hairline w-full px-6 sm:px-10 lg:px-16 section-pad">
+        <div className="grid gap-px bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+          {GALLERY.map((img, i) => (
+            <figure key={img.src} className="group m-0">
+              <div className="relative overflow-hidden" style={{ aspectRatio: '3/4' }}>
+                <Image
+                  src={img.src} alt={img.label} fill unoptimized
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
+                  loading={i < 4 ? 'eager' : 'lazy'}
+                />
+              </div>
+              <figcaption className="border-t border-hairline bg-canvas px-5 py-4">
+                <div className="label-uc text-[9px] text-white/40">{img.label}</div>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <div className="mt-16 text-center">
+          <Link href="/consultation" className="btn-primary"><span>Book a Service</span></Link>
         </div>
       </section>
     </div>

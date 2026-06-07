@@ -28,55 +28,78 @@ export default function BeforeAfterSlider({ beforeImg, afterImg }: BeforeAfterPr
     if (!isDragging) return;
     const container = containerRef.current;
     if (!container) return;
-    
     const rect = container.getBoundingClientRect();
-    const x = ('touches' in e) ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const x = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
     let pos = ((x - rect.left) / rect.width) * 100;
-    
-    if (pos < 0) pos = 0;
-    if (pos > 100) pos = 100;
-    
+    pos = Math.max(0, Math.min(100, pos));
     setSliderPos(pos);
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="relative w-full overflow-hidden select-none"
       style={{ aspectRatio: '16/9' }}
       onMouseMove={handleMove}
       onTouchMove={handleMove}
     >
+      {/* After image (base) */}
       <div className="absolute inset-0">
-        <Image src={afterImg} alt="After" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
+        <Image
+          src={afterImg}
+          alt="After detailing"
+          fill
+          unoptimized
+          className="object-cover"
+          sizes="(max-width: 1024px) 100vw, 75vw"
+        />
       </div>
 
-      <div 
+      {/* Before image (clipped) */}
+      <div
         className="absolute inset-0"
         style={{ clipPath: `polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)` }}
       >
-        <Image src={beforeImg} alt="Before" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
+        <Image
+          src={beforeImg}
+          alt="Before detailing"
+          fill
+          unoptimized
+          className="object-cover"
+          sizes="(max-width: 1024px) 100vw, 75vw"
+        />
       </div>
 
-      <div className={`absolute left-4 top-4 z-10 label-uc bg-black/40 px-3 py-1 backdrop-blur transition-opacity duration-1000 ${mounted ? 'opacity-100' : 'opacity-0 delay-700'}`}>
+      {/* Labels */}
+      <div
+        className={`absolute left-4 top-4 z-10 label-uc text-[9px] bg-black/50 px-3 py-1 backdrop-blur-sm transition-opacity duration-700 ${
+          mounted ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
         Before
       </div>
-      <div className={`absolute right-4 top-4 z-10 label-uc bg-black/40 px-3 py-1 backdrop-blur transition-opacity duration-1000 ${mounted ? 'opacity-100' : 'opacity-0 delay-700'}`}>
+      <div
+        className={`absolute right-4 top-4 z-10 label-uc text-[9px] bg-black/50 px-3 py-1 backdrop-blur-sm transition-opacity duration-700 delay-200 ${
+          mounted ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
         After
       </div>
 
-      <div 
-        className="absolute top-0 bottom-0 w-[2px] bg-white cursor-ew-resize"
+      {/* Divider line */}
+      <div
+        className="absolute top-0 bottom-0 w-[1px] bg-white/60 cursor-ew-resize z-20"
         style={{ left: `${sliderPos}%` }}
         onMouseDown={() => setIsDragging(true)}
         onTouchStart={() => setIsDragging(true)}
         data-cursor="drag"
       >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 pulse-ring">
-          <div className="flex gap-1">
-            <div className="w-1 h-3 bg-gray-300 rounded-full" />
-            <div className="w-1 h-3 bg-gray-300 rounded-full" />
-          </div>
+        {/* Handle */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-xl cursor-ew-resize">
+          <svg width="16" height="10" viewBox="0 0 16 10" fill="none">
+            <path d="M5 1L1 5L5 9" stroke="#666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M11 1L15 5L11 9" stroke="#666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
       </div>
     </div>

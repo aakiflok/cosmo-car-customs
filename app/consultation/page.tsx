@@ -32,8 +32,8 @@ export default function ConsultationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas container-pad page-hero pb-24">
-      <div className="mx-auto max-w-[680px]">
+    <div className="min-h-screen bg-canvas w-full px-6 sm:px-10 lg:px-16 page-hero pb-24">
+      <div className="max-w-[680px]">
         {!submitted ? (
           <>
             <span className="livery-line" />
@@ -47,7 +47,7 @@ export default function ConsultationPage() {
                 </span>
                 <span className="label-uc text-[9px] text-white/25">Step {step + 1} of {STEPS.length + 1}</span>
               </div>
-              <div className="h-px w-full bg-[#1f1f1f]" role="progressbar"
+              <div className="h-px w-full bg-hairline" role="progressbar"
                 aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
                 <div className="h-full bg-rossa transition-all duration-500" style={{ width: `${progress}%` }} />
               </div>
@@ -63,7 +63,7 @@ export default function ConsultationPage() {
                   return (
                     <button key={opt} onClick={() => select(opt)}
                       className={`border p-6 text-left transition-all hover:-translate-y-px ${
-                        selected ? 'border-rossa bg-rossa/10' : 'border-[#1f1f1f] hover:border-white/20'
+                        selected ? 'border-rossa bg-rossa/10' : 'border-hairline hover:border-white/20'
                       }`}
                       aria-pressed={selected}>
                       <div className="label-uc mb-1 text-[9px] text-white/30">{selected ? '✓ Selected' : 'Select'}</div>
@@ -85,7 +85,7 @@ export default function ConsultationPage() {
                     </div>
                   )
                 )}
-                <div className="border border-[#1f1f1f] bg-[#0d0d0d] p-6">
+                <div className="border border-hairline bg-elevated p-6">
                   <div className="label-uc mb-4 text-[9px] text-white/30">Your selections</div>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {STEPS.map(s => answers[s.id] && (
@@ -128,9 +128,9 @@ export default function ConsultationPage() {
               We&rsquo;ll be in touch shortly{contact.name ? `, ${contact.name}` : ''}.
             </h2>
             <p className="mb-10 text-[14px] leading-7 text-white/50">
-              Our team typically responds within a few hours during business hours. In the meantime, explore our work.
+              Our team typically responds within a few hours during business hours.
             </p>
-            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <div className="flex flex-col items-center gap-4 sm:flex-row">
               <Link href="/gallery" className="btn-primary"><span>View Gallery</span></Link>
               <Link href="/#services" className="btn-outline">Explore Services</Link>
             </div>

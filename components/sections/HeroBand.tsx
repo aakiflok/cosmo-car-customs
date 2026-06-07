@@ -1,204 +1,229 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
-import { gsap } from 'gsap';
+import { useRef, useEffect } from 'react';
 import { useMagnetic } from '@/hooks/useMagnetic';
 import { BUSINESS } from '@/lib/data';
 
-// Dynamically import Three.js particles to keep initial bundle small
-const HeroParticles = dynamic(() => import('./HeroParticles'), { ssr: false });
+const STATS = [
+  { value: BUSINESS.googleRating,    label: 'Google Rating'     },
+  { value: '200+',                   label: 'Five Star Reviews'  },
+  { value: BUSINESS.yearsExperience, label: 'Years Experience'   },
+  { value: '500+',                   label: 'Vehicles Protected' },
+];
+
+const STAT_DELAYS = ['delay-1', 'delay-2', 'delay-3', 'delay-4'];
+
+function parseStat(raw: string) {
+  const suffix   = raw.replace(/[\d.]/g, '');
+  const num      = parseFloat(raw);
+  const decimals = raw.includes('.') ? (raw.split('.')[1]?.replace(/\D/g, '').length ?? 0) : 0;
+  return { num, decimals, suffix };
+}
+
+function animateCounter(el: HTMLElement, target: number, decimals: number, suffix: string, duration = 1400) {
+  const start = performance.now();
+  const step  = (now: number) => {
+    const t     = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = (eased * target).toFixed(decimals) + suffix;
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+const CAR_IMG = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2000&q=90';
 
 export default function HeroBand() {
-  const wrapRef = useRef<HTMLElement>(null);
-  const btn1Ref = useRef<HTMLAnchorElement>(null);
-  const btn2Ref = useRef<HTMLAnchorElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const fgRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [isReady, setIsReady] = useState(false);
+  const btn1Ref    = useRef<HTMLAnchorElement>(null);
+  const btn2Ref    = useRef<HTMLAnchorElement>(null);
+  const heroRef    = useRef<HTMLElement>(null);
+  const statsRef   = useRef<HTMLDivElement>(null);
+  const belowRef   = useRef<HTMLDivElement>(null);
 
   useMagnetic(btn1Ref as React.RefObject<HTMLElement>);
   useMagnetic(btn2Ref as React.RefObject<HTMLElement>);
 
+  // Entry animation (above fold)
   useEffect(() => {
-    // Wait for preloader to dispatch complete event
-    const handleReady = () => setIsReady(true);
-    window.addEventListener('preloaderComplete', handleReady);
-    
-    // Fallback if event is missed
-    const t = setTimeout(() => setIsReady(true), 2800);
-    
-    return () => {
-      window.removeEventListener('preloaderComplete', handleReady);
-      clearTimeout(t);
-    };
+    const el = heroRef.current;
+    if (!el) return;
+    const targets = el.querySelectorAll<HTMLElement>('[data-hero-anim]');
+    const raf = requestAnimationFrame(() => {
+      requestAnimationFrame(() => targets.forEach(t => t.classList.add('in')));
+    });
+    return () => cancelAnimationFrame(raf);
   }, []);
 
+  // Scroll-reveal for below-fold section
   useEffect(() => {
-    if (!isReady || !wrapRef.current) return;
-    
-    // Entrance animations sequence
-    const ctx = gsap.context(() => {
-      gsap.to('.clip-reveal', {
-        clipPath: 'inset(0 0 0% 0)',
-        opacity: 1,
-        duration: 1.2,
-        stagger: 0.15,
-        ease: 'power4.out',
-      });
-      gsap.to('.fade-up', {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        stagger: 0.1,
-        ease: 'power3.out',
-        delay: 0.4
-      });
-    }, wrapRef);
-    
-    return () => ctx.revert();
-  }, [isReady]);
+    const section = belowRef.current;
+    if (!section) return;
+    const items = section.querySelectorAll<HTMLElement>('[data-scroll-reveal]');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('in');
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.15 },
+    );
+    items.forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
-  // 4-layer Parallax
+  // Stat counters (fires when stats grid enters viewport)
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    
-    const ctx = gsap.context(() => {
-      // Background layer (slowest)
-      gsap.to(bgRef.current, {
-        yPercent: 30,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: wrapRef.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-        }
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const grid = statsRef.current;
+    if (!grid) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect();
+      grid.querySelectorAll<HTMLElement>('[data-stat-val]').forEach(cell => {
+        const raw = cell.dataset.statVal ?? '0';
+        const { num, decimals, suffix } = parseStat(raw);
+        if (reduced) { cell.textContent = raw; return; }
+        animateCounter(cell, num, decimals, suffix);
       });
-      
-      // Foreground gradient layer
-      gsap.to(fgRef.current, {
-        yPercent: 15,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: wrapRef.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-        }
-      });
-
-      // Text content layer (fastest)
-      gsap.to(contentRef.current, {
-        yPercent: -20,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: wrapRef.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-        }
-      });
-    }, wrapRef);
-
-    return () => ctx.revert();
+    }, { threshold: 0.4 });
+    observer.observe(grid);
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <section ref={wrapRef} className="relative flex min-h-[100svh] items-end overflow-hidden bg-black" aria-label="Hero">
+    <section
+      ref={heroRef}
+      className="relative w-full bg-[#0a0a0a] overflow-hidden"
+      aria-label="Hero"
+    >
+      {/* ── ABOVE FOLD ── */}
+      <div className="relative flex min-h-[100svh] w-full items-end">
 
-      {/* Layer 1: Background image — right half only on desktop, full on mobile */}
-      <div ref={bgRef} className="absolute inset-0 scale-105 origin-center will-change-transform">
-        <Image
-          src="https://images.unsplash.com/photo-1494976688153-cd3554744ab4?auto=format&fit=crop&w=1800&q=85"
-          alt="" role="presentation" fill
-          className="object-cover object-center opacity-90"
-          priority sizes="100vw"
+        {/* Full-bleed car */}
+        <div className="absolute inset-0">
+          <Image
+            src={CAR_IMG}
+            alt="Dark sports car on showroom floor"
+            fill
+            unoptimized
+            priority
+            className="object-cover object-center scale-[1.02]"
+            sizes="100vw"
+          />
+        </div>
+
+        {/* Floor reflection */}
+        <div
+          aria-hidden="true"
+          className="absolute bottom-0 left-0 right-0 z-[5] overflow-hidden"
+          style={{ height: '32%' }}
+        >
+          <div className="absolute inset-0" style={{ transform: 'scaleY(-1)', transformOrigin: 'bottom' }}>
+            <Image
+              src={CAR_IMG}
+              alt=""
+              fill
+              unoptimized
+              className="object-cover object-center scale-[1.02] opacity-30"
+              sizes="100vw"
+            />
+          </div>
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(to bottom, rgba(10,10,10,1) 0%, rgba(10,10,10,0.4) 50%, rgba(10,10,10,0) 100%)' }}
+          />
+        </div>
+
+        {/* Studio vignette */}
+        <div
+          className="absolute inset-0 z-10"
+          style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 0%, rgba(10,10,10,0.5) 60%, rgba(10,10,10,0.96) 100%)' }}
+          aria-hidden="true"
         />
-        {/* Left-side darkening so text stays readable */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/20" />
+
         {/* Bottom fade */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-      </div>
+        <div
+          className="absolute bottom-0 left-0 right-0 h-48 z-10"
+          style={{ background: 'linear-gradient(to bottom, transparent, #0a0a0a)' }}
+          aria-hidden="true"
+        />
 
-      {/* Layer 2: Subtle particles overlay */}
-      <div className="absolute inset-0 z-0 opacity-40">
-        <HeroParticles />
-      </div>
+        {/* Red left bar */}
+        <div className="absolute left-0 top-0 h-full w-[3px] bg-rossa z-20" aria-hidden="true" />
 
-      {/* Red accent bar */}
-      <div className="absolute left-0 top-0 h-full w-[3px] bg-rossa z-20" aria-hidden="true" />
-
-      {/* Layer 3: Content — two-column layout */}
-      <div ref={contentRef} className="relative z-30 w-full will-change-transform">
-        <div className="mx-auto max-w-[1440px] container-pad pb-16 pt-36 md:pb-24 md:pt-44">
-
-          {/* Top label */}
-          <div className="fade-up translate-y-6 opacity-0 mb-10 flex items-center gap-4">
-            <span className="block h-[1px] w-10 bg-rossa" />
+        {/* Copy */}
+        <div className="relative z-20 w-full px-8 sm:px-14 lg:px-20 xl:px-28 pb-20 lg:pb-28">
+          <div data-hero-anim className="fade-up flex items-center gap-4 mb-8">
+            <span className="block h-[1px] w-10 bg-rossa flex-shrink-0" />
             <span className="label-uc text-[10px] text-white/50 tracking-[0.2em]">
               {BUSINESS.googleRating} Google &middot; {BUSINESS.reviewCount} Reviews &middot; Mississauga
             </span>
           </div>
 
-          {/* Main content grid: heading left, tagline+CTA right */}
-          <div className="grid lg:grid-cols-[1fr_420px] lg:items-end gap-10 lg:gap-16 mb-16 lg:mb-20">
+          <h1 data-hero-anim className="fade-up delay-1 display-mega text-white max-w-[720px] mb-10">
+            The Detail<br />
+            <em className="text-white/70">Is Everything.</em>
+          </h1>
 
-            {/* Left: Big heading */}
-            <div>
-              <div className="overflow-hidden">
-                <h1
-                  className="clip-reveal display-mega text-white opacity-0 leading-[0.92]"
-                  style={{ clipPath: 'inset(100% 0 0% 0)' }}
-                >
-                  The Detail
-                  <br />
-                  <em className="text-white/80">Is Everything.</em>
-                </h1>
-              </div>
-            </div>
-
-            {/* Right: tagline + CTAs */}
-            <div className="flex flex-col gap-8 lg:pb-2">
-              <div className="overflow-hidden">
-                <p className="clip-reveal text-[15px] leading-8 text-white/55 opacity-0 max-w-[400px]" style={{ clipPath: 'inset(100% 0 0% 0)' }}>
-                  Mississauga&rsquo;s most obsessive detailing studio — ceramic coating, PPF, paint correction, and tinting for drivers who demand perfection.
-                </p>
-              </div>
-              <div className="fade-up translate-y-6 opacity-0 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Link ref={btn1Ref} href="/consultation" className="btn-primary magnetic" data-cursor="link">
-                  <span>Request Consultation</span>
-                </Link>
-                <Link ref={btn2Ref} href="#services" className="btn-outline magnetic" data-cursor="link">
-                  Explore Services
-                </Link>
-              </div>
-            </div>
+          <div data-hero-anim className="fade-up delay-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Link ref={btn1Ref} href="/consultation" className="btn-primary magnetic" data-cursor="link">
+              <span>Request Consultation</span>
+            </Link>
+            <Link ref={btn2Ref} href="#services" className="btn-outline magnetic" data-cursor="link">
+              Explore Services
+            </Link>
           </div>
+        </div>
 
-          {/* Stats strip — full width */}
-          <div className="fade-up translate-y-6 opacity-0 border-t border-white/10 pt-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
-            {[
-              [BUSINESS.googleRating, 'Google Rating'],
-              ['200+', 'Five Star Reviews'],
-              [BUSINESS.yearsExperience + '+', 'Years Experience'],
-              ['500+', 'Vehicles Protected'],
-            ].map(([v, l]) => (
-              <div key={String(l)}>
-                <div className="text-[2rem] sm:text-[2.5rem] font-bold font-barlow tracking-tight text-white leading-none">{v}</div>
-                <div className="label-uc mt-2 text-[9px] text-white/35">{l}</div>
-              </div>
-            ))}
-          </div>
+        {/* Scroll indicator */}
+        <div
+          data-hero-anim
+          className="fade-up delay-9 absolute bottom-10 right-10 z-30 hidden flex-col items-center gap-4 md:flex"
+          aria-hidden="true"
+        >
+          <span className="label-uc text-[9px] text-white/30" style={{ writingMode: 'vertical-rl' }}>Scroll</span>
+          <span className="block h-16 w-[1px] bg-gradient-to-b from-white/40 to-transparent pulse-indicator" />
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-10 right-10 z-30 hidden flex-col items-center gap-4 md:flex fade-up translate-y-8 opacity-0 delay-9" aria-hidden="true">
-        <span className="label-uc text-[9px] text-white/30" style={{ writingMode: 'vertical-rl' }}>Scroll</span>
-        <span className="pulse-indicator block h-16 w-[1px] bg-gradient-to-b from-white/40 to-transparent" />
+      {/* ── BELOW FOLD ── */}
+      <div
+        ref={belowRef}
+        className="relative z-10 px-8 sm:px-14 lg:px-20 xl:px-28 pt-16 pb-24"
+      >
+        {/* Body copy */}
+        <p
+          data-scroll-reveal
+          className="reveal-up text-[15px] leading-8 text-white/50 max-w-[540px] mb-16"
+        >
+          Mississauga&rsquo;s most obsessive detailing studio — ceramic coating,
+          PPF, paint correction, and tinting for drivers who demand perfection.
+        </p>
+
+        {/* Stats */}
+        <div
+          ref={statsRef}
+          className="border-t border-white/10 pt-10 grid grid-cols-2 sm:grid-cols-4 gap-10"
+        >
+          {STATS.map(({ value, label }, i) => (
+            <div
+              key={label}
+              data-scroll-reveal
+              className={`reveal-up ${STAT_DELAYS[i]}`}
+            >
+              <div
+                data-stat-val={value}
+                className="text-[2.5rem] font-bold font-barlow tracking-tight text-white leading-none"
+              >
+                {value}
+              </div>
+              <div className="label-uc mt-2 text-[9px] text-white/35">{label}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

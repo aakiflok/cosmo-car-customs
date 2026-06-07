@@ -1,94 +1,60 @@
 'use client';
-
-import Link from 'next/link';
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
-import { SectionLabel } from '@/components/ui/SectionLabel';
+import Link from 'next/link';
+import { Plus, Minus } from 'lucide-react';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 
-interface FAQItem {
-  q: string;
-  a: string;
-}
-
-const FAQ_TEASER: FAQItem[] = [
-  {
-    q: 'How long does ceramic coating last?',
-    a: 'Professional ceramic coatings last 3-10 years depending on the product tier and maintenance. We recommend annual inspections.',
-  },
-  {
-    q: 'Can PPF be combined with ceramic coating?',
-    a: 'Yes. PPF installed first, then ceramic coated on top, delivers the best overall protection system for your paint.',
-  },
-  {
-    q: 'What is paint correction and do I need it?',
-    a: 'Paint correction removes swirl marks and scratches. It is necessary before ceramic coating or PPF for best results.',
-  },
-  {
-    q: 'Is window tinting legal in Ontario?',
-    a: 'Yes, with limitations. We apply only legal tints that pass inspection in Ontario (front windows 65%+ light transmission).',
-  },
-  {
-    q: 'Do you offer mobile detailing?',
-    a: 'Our studio in Mississauga is our primary location. For mobile services, please contact us directly for availability.',
-  },
-  {
-    q: 'What is your warranty?',
-    a: 'All services include a 5-year protection warranty with transferable coverage on ceramic coatings and PPF.',
-  },
+const FAQS = [
+  { q: 'How long does a ceramic coating last?',       a: 'Our coatings are rated for 5–7 years with proper maintenance washes every 6 months. The Concours stack can last even longer.' },
+  { q: 'Do I need paint correction before coating?',  a: 'For the best result, yes. Coating locks in the surface — if there are swirls or scratches underneath, they’ll be locked in too. We always recommend at least a Stage 1 polish.' },
+  { q: 'How long will my car be in the shop?',        a: 'Depends on the service: a basic detail is same-day, a full PPF + ceramic stack can take 3–4 days. We’ll give you an exact timeline at consultation.' },
+  { q: 'Is PPF worth it on a new car?',               a: 'Absolutely — that’s actually the best time. A new car has zero chips or scratches, and the film goes on perfectly. Protecting it from day one preserves resale value significantly.' },
 ];
 
 export default function FAQTeaser() {
-  const [openIdx, setOpenIdx] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
+  useScrollReveal();
 
   return (
-    <section className="w-full bg-canvas py-32 md:py-48 border-t border-hairline">
-      <div className="mx-auto max-w-[1440px] px-5 md:px-10">
-        <div className="mb-20">
-          <SectionLabel>Questions?</SectionLabel>
-          <h2 className="display-lg">Common questions answered.</h2>
-        </div>
+    <section aria-labelledby="faq-heading" className="w-full bg-elevated section-pad border-t border-hairline">
+      <div className="w-full px-6 sm:px-10 lg:px-16">
 
-        <div className="space-y-1">
-          {FAQ_TEASER.map((item, idx) => (
-            <div key={idx} className="border-b border-hairline transition-colors hover:border-white/10">
-              <button
-                onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
-                className="w-full flex items-center justify-between gap-6 py-6 text-left group"
-                aria-expanded={openIdx === idx}
-              >
-                <span className="display-sm flex-1 group-hover:text-rossa transition-colors">
-                  {item.q}
-                </span>
-                <ChevronDown
-                  size={20}
-                  className={`flex-shrink-0 text-white/40 transition-transform ${
-                    openIdx === idx ? 'rotate-180' : ''
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
+        <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-20">
+          <div>
+            <span className="livery-line reveal-up" />
+            <div className="label-uc mb-3 text-[9px] text-white/30 reveal-up delay-1">FAQ</div>
+            <h2 id="faq-heading" className="display-lg text-white reveal-up delay-2">Common questions.</h2>
+            <Link
+              href="/faq"
+              className="group inline-flex items-center gap-2 mt-8 label-uc text-[9px] text-white/50 hover:text-white transition-colors reveal-up delay-3"
+            >
+              All questions
+              <span className="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
+            </Link>
+          </div>
 
-              <div
-                className="accordion-body overflow-hidden"
-                style={{
-                  gridTemplateRows: openIdx === idx ? '1fr' : '0fr',
-                }}
-              >
-                <div className="pb-6 text-15px text-white/60 leading-relaxed">
-                  {item.a}
+          <div className="divide-y divide-hairline">
+            {FAQS.map((faq, i) => (
+              <div key={i} className="reveal-up" style={{ transitionDelay: `${i * 0.1}s` }}>
+                <button
+                  onClick={() => setOpen(open === i ? null : i)}
+                  className="w-full flex items-center justify-between py-6 text-left gap-6"
+                  aria-expanded={open === i}
+                >
+                  <span className="text-[15px] font-medium text-white">{faq.q}</span>
+                  {open === i
+                    ? <Minus size={16} className="flex-shrink-0 text-rossa" />
+                    : <Plus  size={16} className="flex-shrink-0 text-white/40" />
+                  }
+                </button>
+                <div className={`accordion-body ${open === i ? 'open' : ''}`}>
+                  <div>
+                    <p className="pb-6 text-[14px] leading-7 text-white/55">{faq.a}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-16 pt-12 border-t border-hairline">
-          <p className="text-white/50 text-14px mb-6">
-            Have more questions? Visit our full FAQ for detailed information about services, booking, and aftercare.
-          </p>
-          <Link href="/faq" className="btn-primary">
-            <span>View All FAQs</span>
-          </Link>
+            ))}
+          </div>
         </div>
       </div>
     </section>
