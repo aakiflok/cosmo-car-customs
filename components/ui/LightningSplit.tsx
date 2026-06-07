@@ -21,7 +21,6 @@ export const ELECTRIC_CONFIG = {
   easeStiffness: 6,
   clipOffset:    22,
   amps:          [0.35, -0.7, 0.5],
-  // Idle oscillation when no interaction
   idle: { amp: 18, speed: 0.4, center: 50 },
 } as const
 
@@ -43,14 +42,13 @@ export default function LightningSplit({
   const [displayPos,  setDisplayPos]  = useState(50)
   const [time,        setTime]        = useState(0)
   const [interacting, setInteracting] = useState(false)
-  const [isTouch,     setIsTouch]     = useState(false)
+  // null = SSR / pre-hydration — renders no hint text to avoid mismatch
+  const [isTouch,     setIsTouch]     = useState<boolean | null>(null)
 
-  // Detect touch device on mount
   useEffect(() => {
     setIsTouch(window.matchMedia('(hover: none)').matches)
   }, [])
 
-  // Main RAF loop: advance time, ease displayPos, idle oscillation
   useEffect(() => {
     let raf = 0
     let last = performance.now()
@@ -71,26 +69,16 @@ export default function LightningSplit({
     return () => cancelAnimationFrame(raf)
   }, [position, interacting])
 
-  const getXFromClient = (clientX: number) => {
+  const getXPct = (clientX: number) => {
     if (!containerRef.current) return 50
     const rect = containerRef.current.getBoundingClientRect()
     return ((clientX - rect.left) / rect.width) * 100
   }
 
-  // Mouse handlers
-  const handleMouseMove = (e: React.MouseEvent) => {
-    setInteracting(true)
-    setPosition(getXFromClient(e.clientX) < 50 ? 95 : 15)
-  }
-  const handleMouseLeave = () => { setInteracting(false) }
-
-  // Touch handlers
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setInteracting(true)
-    const x = getXFromClient(e.touches[0].clientX)
-    setPosition(Math.max(5, Math.min(95, x)))
-  }
-  const handleTouchEnd = () => { setInteracting(false) }
+  const handleMouseMove  = (e: React.MouseEvent) => { setInteracting(true);  setPosition(getXPct(e.clientX) < 50 ? 95 : 15) }
+  const handleMouseLeave = ()                     => { setInteracting(false) }
+  const handleTouchMove  = (e: React.TouchEvent) => { setInteracting(true);  setPosition(Math.max(5, Math.min(95, getXPct(e.touches[0].clientX)))) }
+  const handleTouchEnd   = ()                     => { setInteracting(false) }
 
   const clamp = (v: number) => Math.max(0, Math.min(100, v))
 
@@ -99,7 +87,6 @@ export default function LightningSplit({
     const topX    = clamp(displayPos)
     const bottomX = clamp(displayPos - ELECTRIC_CONFIG.clipOffset)
     const pts: { x: number; y: number }[] = []
-
     for (let i = 0; i <= S; i++) {
       const t    = i / S
       const base = topX * (1 - t) + bottomX * t
@@ -111,7 +98,6 @@ export default function LightningSplit({
         Math.sin(2 * Math.PI * (ELECTRIC_CONFIG.shimmer.freq * t + ELECTRIC_CONFIG.shimmer.speed * time))
       pts.push({ y: t * 100, x: clamp(base + off) })
     }
-
     return {
       polyPointsStr:  pts.map(p => `${p.x},${p.y}`).join(' '),
       clipPolygonStr: `polygon(0% 0%, ${pts.map(p => `${p.x}% ${p.y}%`).join(', ')}, 0% 100%)`,
@@ -123,96 +109,60 @@ export default function LightningSplit({
     clipPath:       clipPolygonStr,
   }
 
+  // Only rendered after hydration — correct copy per device type
+  const hintText = isTouch === null ? null : isTouch ? 'Tap left · right to reveal' : 'Hover to reveal'
+
   return (
     <div
       ref={containerRef}
-      className="relative w-full select-none overflow-hidden bg-[#0a0a0a]"
+      className="relative w-full select-none overflow-hidden bg-[#0a0a0a] lsplit-container"
       style={{ aspectRatio: '4 / 3' }}
-      // Use a CSS var override for md+ via inline style — Tailwind can't do dynamic aspect-ratio
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchEnd}
     >
-      {/* Responsive aspect ratio: 4:3 mobile, 16:9 desktop */}
-      <style>{`
-        @media (min-width: 768px) {
-          .lsplit-container { aspect-ratio: 16 / 9 !important; }
-        }
-      `}</style>
+      <style>{`@media (min-width: 768px) { .lsplit-container { aspect-ratio: 16 / 9 !important; } }`}</style>
 
-      {/* After image — base layer */}
+      {/* After image */}
       <div className="absolute inset-0">
-        <Image
-          src={afterImg}
-          alt={afterLabel}
-          fill unoptimized
-          className="object-cover"
-          sizes="(max-width:768px) 100vw, 75vw"
-          priority
-        />
+        <Image src={afterImg} alt={afterLabel} fill unoptimized className="object-cover"
+          sizes="(max-width:768px) 100vw, 75vw" priority />
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      {/* Before image — wavy-clipped layer */}
+      {/* Before image — clipped */}
       <div className="absolute inset-0" style={clipStyle}>
-        <Image
-          src={beforeImg}
-          alt={beforeLabel}
-          fill unoptimized
-          className="object-cover"
-          sizes="(max-width:768px) 100vw, 75vw"
-          priority
-        />
+        <Image src={beforeImg} alt={beforeLabel} fill unoptimized className="object-cover"
+          sizes="(max-width:768px) 100vw, 75vw" priority />
         <div className="absolute inset-0 bg-black/25" />
       </div>
 
-      {/* SVG electric arc */}
-      <svg
-        className="pointer-events-none absolute inset-0 z-30"
-        width="100%" height="100%"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-      >
+      {/* SVG arc */}
+      <svg className="pointer-events-none absolute inset-0 z-30" width="100%" height="100%"
+        viewBox="0 0 100 100" preserveAspectRatio="none">
         <defs>
           <filter id="lsplit-glow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation={ELECTRIC_CONFIG.svg.glowBlur} result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
         </defs>
-        <polyline points={polyPointsStr} fill="none"
-          stroke={ELECTRIC_CONFIG.svg.strokes.outer.color}
-          strokeWidth={ELECTRIC_CONFIG.svg.strokes.outer.width}
-          vectorEffect="non-scaling-stroke"
-          filter="url(#lsplit-glow)" />
-        <polyline points={polyPointsStr} fill="none"
-          stroke={ELECTRIC_CONFIG.svg.strokes.mid.color}
-          strokeWidth={ELECTRIC_CONFIG.svg.strokes.mid.width}
-          vectorEffect="non-scaling-stroke"
-          filter="url(#lsplit-glow)" />
-        <polyline points={polyPointsStr} fill="none"
-          stroke={ELECTRIC_CONFIG.svg.strokes.core.color}
-          strokeOpacity={ELECTRIC_CONFIG.svg.strokes.core.opacity}
-          strokeWidth={ELECTRIC_CONFIG.svg.strokes.core.width}
-          vectorEffect="non-scaling-stroke" />
+        <polyline points={polyPointsStr} fill="none" stroke={ELECTRIC_CONFIG.svg.strokes.outer.color} strokeWidth={ELECTRIC_CONFIG.svg.strokes.outer.width} vectorEffect="non-scaling-stroke" filter="url(#lsplit-glow)" />
+        <polyline points={polyPointsStr} fill="none" stroke={ELECTRIC_CONFIG.svg.strokes.mid.color}   strokeWidth={ELECTRIC_CONFIG.svg.strokes.mid.width}   vectorEffect="non-scaling-stroke" filter="url(#lsplit-glow)" />
+        <polyline points={polyPointsStr} fill="none" stroke={ELECTRIC_CONFIG.svg.strokes.core.color}  strokeWidth={ELECTRIC_CONFIG.svg.strokes.core.width}  strokeOpacity={ELECTRIC_CONFIG.svg.strokes.core.opacity} vectorEffect="non-scaling-stroke" />
       </svg>
 
-      {/* Labels */}
-      <div className="absolute left-4 top-4 z-40 label-uc text-[9px] bg-black/60 backdrop-blur-sm px-3 py-1 border border-white/10 text-white">
-        {beforeLabel}
-      </div>
-      <div className="absolute right-4 top-4 z-40 label-uc text-[9px] bg-black/60 backdrop-blur-sm px-3 py-1 border border-white/10 text-white">
-        {afterLabel}
-      </div>
+      {/* Corner labels */}
+      <div className="absolute left-4 top-4 z-40 label-uc text-[9px] bg-black/60 backdrop-blur-sm px-3 py-1 border border-white/10 text-white">{beforeLabel}</div>
+      <div className="absolute right-4 top-4 z-40 label-uc text-[9px] bg-black/60 backdrop-blur-sm px-3 py-1 border border-white/10 text-white">{afterLabel}</div>
 
-      {/* Hint — context-aware */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 label-uc text-[8px] text-white/40 pointer-events-none whitespace-nowrap">
-        {isTouch ? 'Drag to reveal' : 'Hover to reveal'}
-      </div>
+      {/* Hint — only after hydration, correct copy per device */}
+      {hintText && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 label-uc text-[8px] text-white/40 pointer-events-none whitespace-nowrap">
+          {hintText}
+        </div>
+      )}
     </div>
   )
 }
