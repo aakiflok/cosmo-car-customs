@@ -12,7 +12,9 @@ export default function WarrantyBadge() {
 
           <div>
             <div className="label-uc mb-3 text-[9px] text-white/30">Our Guarantee</div>
-            <h2 className="display-md text-white mb-3">Every service is backed by our warranty.</h2>
+            <h2 className="text-[1.35rem] sm:text-[1.6rem] font-semibold tracking-tight text-white leading-snug mb-3">
+              Every service is backed by our warranty.
+            </h2>
             <p className="text-[14px] leading-7 text-white/50">
               Ceramic coatings come with a 5-year written warranty. PPF carries a 10-year manufacturer warranty.
               If anything fails due to product or installation defect, we fix it — no questions asked.

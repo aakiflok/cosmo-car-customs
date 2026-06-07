@@ -24,8 +24,12 @@ export default function FAQTeaser() {
             <span className="livery-line reveal-up" />
             <div className="label-uc mb-3 text-[9px] text-white/30 reveal-up delay-1">FAQ</div>
             <h2 id="faq-heading" className="display-lg text-white reveal-up delay-2">Common questions.</h2>
-            <Link href="/faq" className="btn-ghost label-uc text-[9px] mt-8 inline-flex items-center gap-2 reveal-up delay-3">
-              All questions &rarr;
+            <Link
+              href="/faq"
+              className="group inline-flex items-center gap-2 mt-8 label-uc text-[9px] text-white/50 hover:text-white transition-colors reveal-up delay-3"
+            >
+              All questions
+              <span className="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
             </Link>
           </div>
 

@@ -15,7 +15,7 @@ export default function TrustStrip() {
       <div className="w-full px-6 sm:px-10 lg:px-16">
         <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-hairline">
           {TRUST.map(({ icon: Icon, label, sub }) => (
-            <div key={label} className="flex items-center gap-4 py-6 sm:py-8 px-4 sm:px-6 first:pl-0 last:pr-0">
+            <div key={label} className="flex items-center gap-4 py-6 sm:py-8 px-4 sm:px-8">
               <Icon size={18} className="flex-shrink-0 text-rossa" aria-hidden="true" />
               <div>
                 <div className="label-uc text-[9px] text-white">{label}</div>
