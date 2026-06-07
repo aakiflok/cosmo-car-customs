@@ -12,17 +12,44 @@ const STATS = [
   { value: '500+',                   label: 'Vehicles Protected' },
 ];
 
+// Parse "4.9", "200+", "5+" → { num, decimals, suffix }
+function parseStat(raw: string) {
+  const suffix   = raw.replace(/[\d.]/g, '');
+  const num      = parseFloat(raw);
+  const decimals = raw.includes('.') ? (raw.split('.')[1]?.replace(/\D/g,'').length ?? 0) : 0;
+  return { num, decimals, suffix };
+}
+
+function animateCounter(
+  el: HTMLElement,
+  target: number,
+  decimals: number,
+  suffix: string,
+  duration = 1400,
+) {
+  const start = performance.now();
+  const step  = (now: number) => {
+    const t        = Math.min((now - start) / duration, 1);
+    const eased    = 1 - Math.pow(1 - t, 3); // ease-out cubic
+    const current  = eased * target;
+    el.textContent = current.toFixed(decimals) + suffix;
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
 export default function HeroBand() {
   const btn1Ref  = useRef<HTMLAnchorElement>(null);
   const btn2Ref  = useRef<HTMLAnchorElement>(null);
   const heroRef  = useRef<HTMLElement>(null);
   const carRef   = useRef<HTMLDivElement>(null);
   const copyRef  = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
 
   useMagnetic(btn1Ref as React.RefObject<HTMLElement>);
   useMagnetic(btn2Ref as React.RefObject<HTMLElement>);
 
-  // ── Entry animation ──────────────────────────────────────
+  // ── Entry animation ────────────────────────────────────────
   useEffect(() => {
     const el = heroRef.current;
     if (!el) return;
@@ -33,46 +60,54 @@ export default function HeroBand() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // ── Scroll parallax ──────────────────────────────────────
+  // ── Scroll parallax ────────────────────────────────────────
   useEffect(() => {
-    // Honour reduced-motion preference
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
     const hero = heroRef.current;
     const car  = carRef.current;
     const copy = copyRef.current;
     if (!hero || !car || !copy) return;
-
-    let rafId = 0;
     let ticking = false;
-
+    let rafId   = 0;
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
       rafId = requestAnimationFrame(() => {
-        const heroH   = hero.offsetHeight;
-        const scrollY = window.scrollY;
-        // progress 0 → 1 over one hero height
-        const progress = Math.min(scrollY / heroH, 1);
-
-        // Car drifts up: max -80px at full scroll-through
+        const progress = Math.min(window.scrollY / hero.offsetHeight, 1);
         car.style.transform  = `translateY(${progress * -80}px)`;
         car.style.willChange = 'transform';
-
-        // Copy fades from 1 → 0.3 in the last 50% of scroll
         const fade = progress < 0.5 ? 1 : 1 - (progress - 0.5) * 1.4;
         copy.style.opacity   = String(Math.max(fade, 0.3));
         copy.style.willChange = 'opacity';
-
         ticking = false;
       });
     };
-
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      cancelAnimationFrame(rafId);
-    };
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(rafId); };
+  }, []);
+
+  // ── Stat counters (fire once on enter) ────────────────────
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const grid    = statsRef.current;
+    if (!grid) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        const cells = grid.querySelectorAll<HTMLElement>('[data-stat-val]');
+        cells.forEach(cell => {
+          const raw = cell.dataset.statVal ?? '0';
+          const { num, decimals, suffix } = parseStat(raw);
+          if (reduced) { cell.textContent = raw; return; }
+          animateCounter(cell, num, decimals, suffix);
+        });
+      },
+      { threshold: 0.6 },
+    );
+    observer.observe(grid);
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -91,11 +126,9 @@ export default function HeroBand() {
 
       <div className="relative z-10 grid lg:grid-cols-2 min-h-[100svh] items-center">
 
-        {/* LEFT: Copy — fades on scroll exit */}
-        <div
-          ref={copyRef}
-          className="flex flex-col justify-center px-8 sm:px-12 lg:px-16 xl:px-24 py-24 lg:py-0"
-        >
+        {/* LEFT: Copy */}
+        <div ref={copyRef} className="flex flex-col justify-center px-8 sm:px-12 lg:px-16 xl:px-24 py-24 lg:py-0">
+
           <div data-hero-anim className="fade-up flex items-center gap-4 mb-8">
             <span className="block h-[1px] w-10 bg-rossa flex-shrink-0" />
             <span className="label-uc text-[10px] text-white/50 tracking-[0.2em]">
@@ -125,17 +158,27 @@ export default function HeroBand() {
             </Link>
           </div>
 
-          <div data-hero-anim className="fade-up delay-5 border-t border-white/10 pt-8 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-8">
+          {/* Stats grid — counter targets */}
+          <div
+            ref={statsRef}
+            data-hero-anim
+            className="fade-up delay-5 border-t border-white/10 pt-8 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-8"
+          >
             {STATS.map(({ value, label }) => (
               <div key={label}>
-                <div className="text-[2rem] font-bold font-barlow tracking-tight text-white leading-none">{value}</div>
+                <div
+                  data-stat-val={value}
+                  className="text-[2rem] font-bold font-barlow tracking-tight text-white leading-none"
+                >
+                  {value}
+                </div>
                 <div className="label-uc mt-2 text-[9px] text-white/35">{label}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* RIGHT: Car — drifts up on scroll */}
+        {/* RIGHT: Car */}
         <div
           ref={carRef}
           data-hero-anim
