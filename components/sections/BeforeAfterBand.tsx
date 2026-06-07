@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 const JOBS = [
   {
@@ -34,6 +35,7 @@ const JOBS = [
 
 export default function BeforeAfterBand() {
   const [active, setActive] = useState(0);
+  useScrollReveal();
   const job = JOBS[active];
 
   return (
@@ -41,13 +43,13 @@ export default function BeforeAfterBand() {
       <div className="w-full px-6 sm:px-10 lg:px-16">
 
         <div className="mb-12">
-          <span className="livery-line" />
-          <div className="label-uc text-[9px] text-white/40 mb-4">Real Results</div>
-          <h2 className="display-lg text-white">See the transformation.</h2>
+          <span className="livery-line reveal-up" />
+          <div className="label-uc text-[9px] text-white/40 mb-4 reveal-up delay-1">Real Results</div>
+          <h2 className="display-lg text-white reveal-up delay-2">See the transformation.</h2>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-0 mb-10 border border-hairline w-fit">
+        <div className="flex gap-0 mb-10 border border-hairline w-fit reveal-up delay-3">
           {JOBS.map((j, i) => (
             <button
               key={i}
@@ -63,26 +65,27 @@ export default function BeforeAfterBand() {
 
         {/* Panel */}
         <div className="grid md:grid-cols-[3fr_1fr] gap-8 items-start">
-          <div className="w-full overflow-hidden">
+          {/* Slider — clip-reveal wipes in from bottom on scroll */}
+          <div className="w-full overflow-hidden clip-reveal">
             <BeforeAfterSlider key={active} beforeImg={job.beforeImg} afterImg={job.afterImg} />
           </div>
           <div className="flex flex-col gap-6 pt-2">
-            <div>
+            <div className="reveal-up delay-1">
               <p className="label-uc text-[9px] text-white/40 mb-2">Vehicle</p>
               <p className="text-white text-[14px] font-medium">{job.vehicle}</p>
             </div>
             <div className="h-px bg-hairline" />
-            <div>
+            <div className="reveal-up delay-2">
               <p className="label-uc text-[9px] text-white/40 mb-2">Service</p>
               <p className="text-white text-[14px] leading-relaxed">{job.service}</p>
             </div>
             <div className="h-px bg-hairline" />
-            <div>
+            <div className="reveal-up delay-3">
               <p className="label-uc text-[9px] text-white/40 mb-2">Time taken</p>
               <p className="text-white text-[14px]">{job.timeTaken}</p>
             </div>
             <div className="h-px bg-hairline" />
-            <div>
+            <div className="reveal-up delay-4">
               <p className="label-uc text-[9px] text-white/40 mb-3">Products</p>
               <div className="flex flex-wrap gap-2">
                 {job.products.map((p) => (

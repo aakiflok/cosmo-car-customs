@@ -6,8 +6,8 @@ import { BUSINESS } from '@/lib/data';
 import { useParallax } from '@/hooks/useParallax';
 import { useCounter } from '@/hooks/useCounter';
 
-function Stat({ value, suffix = '', label, decimals = 0, delay = 0 }: {
-  value: number; suffix?: string; label: string; decimals?: number; delay?: number;
+function Stat({ value, suffix = '', label, decimals = 0, delay = 0, goldSuffix = false }: {
+  value: number; suffix?: string; label: string; decimals?: number; delay?: number; goldSuffix?: boolean;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   useCounter(ref, value, 2000);
@@ -15,7 +15,7 @@ function Stat({ value, suffix = '', label, decimals = 0, delay = 0 }: {
     <div className="bg-canvas p-6 md:p-8 fade-up" style={{ transitionDelay: `${delay}s` }}>
       <div className="text-[2rem] sm:text-[2.5rem] font-bold tracking-tight text-white font-barlow leading-none">
         <span ref={ref}>{decimals > 0 ? value.toFixed(decimals) : 0}</span>
-        <span className="text-rossa ml-1">{suffix}</span>
+        <span className={`ml-1 ${goldSuffix ? 'text-gold' : 'text-rossa'}`}>{suffix}</span>
       </div>
       <div className="label-uc mt-3 text-[9px] text-white/40">{label}</div>
     </div>
@@ -31,7 +31,7 @@ export default function AboutBand() {
       <div className="w-full px-6 sm:px-10 lg:px-16">
         <div className="grid gap-px bg-hairline lg:grid-cols-2">
 
-          {/* Photo */}
+          {/* Photo — clip-reveal wipes image in from bottom */}
           <div className="relative min-h-[340px] sm:min-h-[500px] lg:min-h-[720px] overflow-hidden bg-canvas clip-reveal">
             <div ref={imgRef} className="absolute inset-[-15%] will-change-transform">
               <Image
@@ -44,7 +44,8 @@ export default function AboutBand() {
               />
               <div className="absolute inset-0 bg-black/20" />
             </div>
-            <div className="absolute bottom-8 left-8 right-8 bg-black/40 backdrop-blur-sm p-6 md:p-8 border-l-2 border-rossa fade-up delay-4">
+            {/* Quote overlay — reveal-up so it glides in after the image wipes */}
+            <div className="absolute bottom-8 left-8 right-8 bg-black/40 backdrop-blur-sm p-6 md:p-8 border-l-2 border-rossa reveal-up delay-4">
               <p className="font-playfair text-[1.1rem] sm:text-[1.35rem] italic text-white leading-snug">
                 &ldquo;We don&rsquo;t do volume. We do perfection. Every car is treated as though it&rsquo;s the only one in the shop.&rdquo;
               </p>
@@ -72,7 +73,7 @@ export default function AboutBand() {
               </div>
             </div>
             <div className="mb-10 grid grid-cols-2 gap-px bg-hairline">
-              <Stat value={4.9}  suffix="★" label="Google Rating"    decimals={1} delay={0.3} />
+              <Stat value={4.9}  suffix="★" label="Google Rating"    decimals={1} delay={0.3} goldSuffix />
               <Stat value={parseInt(BUSINESS.reviewCount)}     suffix="+" label="Verified Reviews" delay={0.4} />
               <Stat value={parseInt(BUSINESS.yearsExperience)} suffix="+" label="Years Experience" delay={0.5} />
               <Stat value={500}  suffix="+" label="Vehicles Served"  delay={0.6} />

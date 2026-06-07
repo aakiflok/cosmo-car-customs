@@ -46,7 +46,7 @@ export default function FinishShowcase() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-hairline mb-10">
+        <div className="flex border-b border-hairline mb-10 reveal-up delay-3">
           {FINISHES.map((f, i) => (
             <button
               key={f.id}
@@ -62,21 +62,22 @@ export default function FinishShowcase() {
 
         {/* Content */}
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
-          <div>
+          <div className="reveal-up delay-2">
             <h3 className="display-md text-white mb-6">{fin.headline}</h3>
             <p className="text-[15px] leading-8 text-white/55 mb-10">{fin.body}</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-hairline">
               {fin.specs.map(([k, v]) => (
                 <div key={k} className="bg-elevated p-5">
-                  <div className="font-barlow font-bold text-[1.4rem] text-white leading-none mb-2">{v}</div>
+                  <div className="font-barlow font-bold text-[1.6rem] text-white leading-none mb-2">{v}</div>
                   <div className="label-uc text-[8px] text-white/35">{k}</div>
                 </div>
               ))}
             </div>
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden">
-            <Image src={fin.img} alt={fin.label} fill unoptimized className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          {/* Image — clip-reveal wipes in from bottom, hero-scrim replaces inline gradient */}
+          <div className="relative aspect-[4/3] overflow-hidden clip-reveal delay-2">
+            <Image src={fin.img} alt={fin.label} fill unoptimized className="object-cover transition-transform duration-700 hover:scale-105" sizes="(max-width:1024px) 100vw, 50vw" />
+            <div className="hero-scrim absolute inset-0" />
           </div>
         </div>
       </div>
