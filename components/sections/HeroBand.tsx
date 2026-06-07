@@ -65,8 +65,8 @@ export default function HeroBand() {
           className="object-cover object-center"
           sizes="100vw"
         />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.65) 50%, rgba(10,10,10,0.35) 100%)' }} />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.6) 30%, transparent 65%)' }} />
+        <div className="hero-scrim-side absolute inset-0" />
+        <div className="hero-scrim absolute inset-0" />
       </div>
 
       {/* Particles */}
@@ -79,7 +79,7 @@ export default function HeroBand() {
 
       {/* Content — sits in lower third of screen */}
       <div ref={contentRef} className="relative z-30 w-full will-change-transform">
-        <div className="w-full pl-10 pr-6 sm:pl-14 sm:pr-10 lg:pl-20 lg:pr-16 pb-20 pt-32 md:pb-28">
+        <div className="w-full px-6 sm:px-10 lg:px-16 pb-20 pt-32 md:pb-28">
 
           {/* Eyebrow */}
           <div className="hero-fade opacity-0 translate-y-6 mb-8 flex items-center gap-4">
