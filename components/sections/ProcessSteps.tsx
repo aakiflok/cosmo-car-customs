@@ -32,7 +32,7 @@ export default function ProcessSteps() {
         <ol className="grid gap-px bg-hairline sm:grid-cols-2 lg:grid-cols-5">
           {STEPS.map((step, i) => (
             <li key={step.n} className="bg-elevated p-8 lg:p-10 reveal-up" style={{ transitionDelay: `${i * 0.1}s` }}>
-              <div className="num-hero text-white/6 leading-none mb-8 text-[4rem] font-barlow font-bold">{step.n}</div>
+              <div className="num-hero text-white/10 leading-none mb-8">{step.n}</div>
               <h3 className="display-sm mb-4 text-white">{step.title}</h3>
               <p className="text-[13px] leading-7 text-white/50">{step.body}</p>
             </li>

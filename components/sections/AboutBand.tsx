@@ -44,7 +44,7 @@ export default function AboutBand() {
               />
               <div className="absolute inset-0 bg-black/20" />
             </div>
-            <div className="absolute bottom-8 left-8 right-8 bg-black/60 backdrop-blur-md p-6 md:p-8 border-l-2 border-rossa fade-up delay-4">
+            <div className="absolute bottom-8 left-8 right-8 bg-black/40 backdrop-blur-sm p-6 md:p-8 border-l-2 border-rossa fade-up delay-4">
               <p className="font-playfair text-[1.1rem] sm:text-[1.35rem] italic text-white leading-snug">
                 &ldquo;We don&rsquo;t do volume. We do perfection. Every car is treated as though it&rsquo;s the only one in the shop.&rdquo;
               </p>

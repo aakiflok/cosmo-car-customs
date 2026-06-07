@@ -68,7 +68,7 @@ export default function FinishShowcase() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-hairline">
               {fin.specs.map(([k, v]) => (
                 <div key={k} className="bg-elevated p-5">
-                  <div className="text-[1.4rem] font-bold font-barlow text-white leading-none mb-2">{v}</div>
+                  <div className="font-barlow font-bold text-[1.4rem] text-white leading-none mb-2">{v}</div>
                   <div className="label-uc text-[8px] text-white/35">{k}</div>
                 </div>
               ))}
