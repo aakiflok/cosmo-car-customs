@@ -12,6 +12,8 @@ const STATS = [
   { value: '500+',                   label: 'Vehicles Protected' },
 ];
 
+const STAT_DELAYS = ['delay-1', 'delay-2', 'delay-3', 'delay-4'];
+
 function parseStat(raw: string) {
   const suffix   = raw.replace(/[\d.]/g, '');
   const num      = parseFloat(raw);
@@ -33,15 +35,16 @@ function animateCounter(el: HTMLElement, target: number, decimals: number, suffi
 const CAR_IMG = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2000&q=90';
 
 export default function HeroBand() {
-  const btn1Ref  = useRef<HTMLAnchorElement>(null);
-  const btn2Ref  = useRef<HTMLAnchorElement>(null);
-  const heroRef  = useRef<HTMLElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
+  const btn1Ref    = useRef<HTMLAnchorElement>(null);
+  const btn2Ref    = useRef<HTMLAnchorElement>(null);
+  const heroRef    = useRef<HTMLElement>(null);
+  const statsRef   = useRef<HTMLDivElement>(null);
+  const belowRef   = useRef<HTMLDivElement>(null);
 
   useMagnetic(btn1Ref as React.RefObject<HTMLElement>);
   useMagnetic(btn2Ref as React.RefObject<HTMLElement>);
 
-  // Entry animation
+  // Entry animation (above fold)
   useEffect(() => {
     const el = heroRef.current;
     if (!el) return;
@@ -52,7 +55,26 @@ export default function HeroBand() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Stat counters
+  // Scroll-reveal for below-fold section
+  useEffect(() => {
+    const section = belowRef.current;
+    if (!section) return;
+    const items = section.querySelectorAll<HTMLElement>('[data-scroll-reveal]');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('in');
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.15 },
+    );
+    items.forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  // Stat counters (fires when stats grid enters viewport)
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const grid = statsRef.current;
@@ -66,7 +88,7 @@ export default function HeroBand() {
         if (reduced) { cell.textContent = raw; return; }
         animateCounter(cell, num, decimals, suffix);
       });
-    }, { threshold: 0.6 });
+    }, { threshold: 0.4 });
     observer.observe(grid);
     return () => observer.disconnect();
   }, []);
@@ -93,13 +115,12 @@ export default function HeroBand() {
           />
         </div>
 
-        {/* Floor reflection — flipped car, masked to ~30% height at bottom */}
+        {/* Floor reflection */}
         <div
           aria-hidden="true"
           className="absolute bottom-0 left-0 right-0 z-[5] overflow-hidden"
           style={{ height: '32%' }}
         >
-          {/* Flipped image */}
           <div className="absolute inset-0" style={{ transform: 'scaleY(-1)', transformOrigin: 'bottom' }}>
             <Image
               src={CAR_IMG}
@@ -110,21 +131,16 @@ export default function HeroBand() {
               sizes="100vw"
             />
           </div>
-          {/* Fade mask: reflection dissolves upward into black */}
           <div
             className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(to bottom, rgba(10,10,10,1) 0%, rgba(10,10,10,0.4) 50%, rgba(10,10,10,0) 100%)',
-            }}
+            style={{ background: 'linear-gradient(to bottom, rgba(10,10,10,1) 0%, rgba(10,10,10,0.4) 50%, rgba(10,10,10,0) 100%)' }}
           />
         </div>
 
         {/* Studio vignette */}
         <div
           className="absolute inset-0 z-10"
-          style={{
-            background: 'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 0%, rgba(10,10,10,0.5) 60%, rgba(10,10,10,0.96) 100%)',
-          }}
+          style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 0%, rgba(10,10,10,0.5) 60%, rgba(10,10,10,0.96) 100%)' }}
           aria-hidden="true"
         />
 
@@ -173,19 +189,35 @@ export default function HeroBand() {
         </div>
       </div>
 
-      {/* ── BELOW FOLD: stats + body ── */}
-      <div className="relative z-10 px-8 sm:px-14 lg:px-20 xl:px-28 pt-16 pb-24">
-        <p data-hero-anim className="reveal-up text-[15px] leading-8 text-white/50 max-w-[540px] mb-16">
+      {/* ── BELOW FOLD ── */}
+      <div
+        ref={belowRef}
+        className="relative z-10 px-8 sm:px-14 lg:px-20 xl:px-28 pt-16 pb-24"
+      >
+        {/* Body copy */}
+        <p
+          data-scroll-reveal
+          className="reveal-up text-[15px] leading-8 text-white/50 max-w-[540px] mb-16"
+        >
           Mississauga&rsquo;s most obsessive detailing studio — ceramic coating,
           PPF, paint correction, and tinting for drivers who demand perfection.
         </p>
+
+        {/* Stats */}
         <div
           ref={statsRef}
           className="border-t border-white/10 pt-10 grid grid-cols-2 sm:grid-cols-4 gap-10"
         >
-          {STATS.map(({ value, label }) => (
-            <div key={label}>
-              <div data-stat-val={value} className="text-[2.5rem] font-bold font-barlow tracking-tight text-white leading-none">
+          {STATS.map(({ value, label }, i) => (
+            <div
+              key={label}
+              data-scroll-reveal
+              className={`reveal-up ${STAT_DELAYS[i]}`}
+            >
+              <div
+                data-stat-val={value}
+                className="text-[2.5rem] font-bold font-barlow tracking-tight text-white leading-none"
+              >
                 {value}
               </div>
               <div className="label-uc mt-2 text-[9px] text-white/35">{label}</div>
