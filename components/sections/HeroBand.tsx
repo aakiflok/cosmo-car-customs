@@ -32,8 +32,6 @@ function animateCounter(el: HTMLElement, target: number, decimals: number, suffi
   requestAnimationFrame(step);
 }
 
-const CAR_IMG = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2000&q=90';
-
 export default function HeroBand() {
   const btn1Ref    = useRef<HTMLAnchorElement>(null);
   const btn2Ref    = useRef<HTMLAnchorElement>(null);
@@ -102,51 +100,42 @@ export default function HeroBand() {
       {/* ── ABOVE FOLD ── */}
       <div className="relative flex min-h-[100svh] w-full items-end">
 
-        {/* Full-bleed car */}
-        <div className="absolute inset-0">
+        {/* Dark gradient background behind SVG */}
+        <div className="absolute inset-0 bg-[#0a0a0a]" />
+
+        {/* Cosmo hero SVG — right-aligned, fills the right half */}
+        <div
+          className="absolute inset-y-0 right-0 z-[2] flex items-center justify-end"
+          style={{ width: '60%' }}
+          aria-hidden="true"
+        >
           <Image
-            src={CAR_IMG}
-            alt="Dark sports car on showroom floor"
+            src="/herosvg.svg"
+            alt=""
             fill
-            unoptimized
             priority
-            className="object-cover object-center scale-[1.02]"
-            sizes="100vw"
+            className="object-contain object-right"
+            sizes="60vw"
           />
         </div>
 
-        {/* Floor reflection */}
+        {/* Left-to-right gradient so copy stays readable over SVG */}
         <div
+          className="absolute inset-0 z-[3]"
+          style={{ background: 'linear-gradient(to right, #0a0a0a 38%, rgba(10,10,10,0.55) 65%, transparent 100%)' }}
           aria-hidden="true"
-          className="absolute bottom-0 left-0 right-0 z-[5] overflow-hidden"
-          style={{ height: '32%' }}
-        >
-          <div className="absolute inset-0" style={{ transform: 'scaleY(-1)', transformOrigin: 'bottom' }}>
-            <Image
-              src={CAR_IMG}
-              alt=""
-              fill
-              unoptimized
-              className="object-cover object-center scale-[1.02] opacity-30"
-              sizes="100vw"
-            />
-          </div>
-          <div
-            className="absolute inset-0"
-            style={{ background: 'linear-gradient(to bottom, rgba(10,10,10,1) 0%, rgba(10,10,10,0.4) 50%, rgba(10,10,10,0) 100%)' }}
-          />
-        </div>
+        />
 
         {/* Studio vignette */}
         <div
-          className="absolute inset-0 z-10"
-          style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 0%, rgba(10,10,10,0.5) 60%, rgba(10,10,10,0.96) 100%)' }}
+          className="absolute inset-0 z-[4]"
+          style={{ background: 'radial-gradient(ellipse 80% 70% at 50% 50%, transparent 30%, rgba(10,10,10,0.45) 70%, rgba(10,10,10,0.9) 100%)' }}
           aria-hidden="true"
         />
 
         {/* Bottom fade */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-48 z-10"
+          className="absolute bottom-0 left-0 right-0 h-48 z-[4]"
           style={{ background: 'linear-gradient(to bottom, transparent, #0a0a0a)' }}
           aria-hidden="true"
         />
@@ -202,7 +191,6 @@ export default function HeroBand() {
             data-scroll-reveal
             className="reveal-up relative flex items-center justify-center"
           >
-            {/* Dark pill background so transparent GIF reads well */}
             <div className="relative w-full max-w-[520px] mx-auto">
               <Image
                 src="/download.gif"
