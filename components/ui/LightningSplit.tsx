@@ -21,6 +21,8 @@ export const ELECTRIC_CONFIG = {
   easeStiffness: 6,
   clipOffset:    22,
   amps:          [0.35, -0.7, 0.5],
+  // Idle oscillation when no interaction
+  idle: { amp: 18, speed: 0.4, center: 50 },
 } as const
 
 interface LightningSplitProps {
@@ -36,11 +38,19 @@ export default function LightningSplit({
   beforeLabel = 'Before',
   afterLabel  = 'After',
 }: LightningSplitProps) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [position,   setPosition]   = useState(55)
-  const [displayPos, setDisplayPos] = useState(55)
-  const [time,       setTime]       = useState(0)
+  const containerRef  = useRef<HTMLDivElement>(null)
+  const [position,    setPosition]    = useState(50)
+  const [displayPos,  setDisplayPos]  = useState(50)
+  const [time,        setTime]        = useState(0)
+  const [interacting, setInteracting] = useState(false)
+  const [isTouch,     setIsTouch]     = useState(false)
 
+  // Detect touch device on mount
+  useEffect(() => {
+    setIsTouch(window.matchMedia('(hover: none)').matches)
+  }, [])
+
+  // Main RAF loop: advance time, ease displayPos, idle oscillation
   useEffect(() => {
     let raf = 0
     let last = performance.now()
@@ -48,20 +58,39 @@ export default function LightningSplit({
       const dt = Math.min(ELECTRIC_CONFIG.timeClampSec, (now - last) / 1000)
       last = now
       setTime(t => t + dt)
-      setDisplayPos(p => p + (position - p) * (1 - Math.exp(-ELECTRIC_CONFIG.easeStiffness * dt)))
+      setDisplayPos(p => {
+        const target = interacting
+          ? position
+          : ELECTRIC_CONFIG.idle.center +
+            ELECTRIC_CONFIG.idle.amp * Math.sin(2 * Math.PI * ELECTRIC_CONFIG.idle.speed * (now / 1000))
+        return p + (target - p) * (1 - Math.exp(-ELECTRIC_CONFIG.easeStiffness * dt))
+      })
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [position])
+  }, [position, interacting])
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!containerRef.current) return
+  const getXFromClient = (clientX: number) => {
+    if (!containerRef.current) return 50
     const rect = containerRef.current.getBoundingClientRect()
-    const x = ((e.clientX - rect.left) / rect.width) * 100
-    setPosition(x < 50 ? 95 : 15)
+    return ((clientX - rect.left) / rect.width) * 100
   }
-  const handleMouseLeave = () => setPosition(55)
+
+  // Mouse handlers
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setInteracting(true)
+    setPosition(getXFromClient(e.clientX) < 50 ? 95 : 15)
+  }
+  const handleMouseLeave = () => { setInteracting(false) }
+
+  // Touch handlers
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setInteracting(true)
+    const x = getXFromClient(e.touches[0].clientX)
+    setPosition(Math.max(5, Math.min(95, x)))
+  }
+  const handleTouchEnd = () => { setInteracting(false) }
 
   const clamp = (v: number) => Math.max(0, Math.min(100, v))
 
@@ -95,43 +124,51 @@ export default function LightningSplit({
   }
 
   return (
-    // Outer wrapper: position relative + explicit aspect ratio so fill images work
     <div
       ref={containerRef}
       className="relative w-full select-none overflow-hidden bg-[#0a0a0a]"
-      style={{ aspectRatio: '16 / 9' }}
+      style={{ aspectRatio: '4 / 3' }}
+      // Use a CSS var override for md+ via inline style — Tailwind can't do dynamic aspect-ratio
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
-      {/* ── After image (base layer) ─────────────────────────── */}
+      {/* Responsive aspect ratio: 4:3 mobile, 16:9 desktop */}
+      <style>{`
+        @media (min-width: 768px) {
+          .lsplit-container { aspect-ratio: 16 / 9 !important; }
+        }
+      `}</style>
+
+      {/* After image — base layer */}
       <div className="absolute inset-0">
         <Image
           src={afterImg}
           alt={afterLabel}
-          fill
-          unoptimized
+          fill unoptimized
           className="object-cover"
-          sizes="(max-width:1024px) 100vw, 75vw"
+          sizes="(max-width:768px) 100vw, 75vw"
           priority
         />
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      {/* ── Before image (wavy-clipped layer) ────────────────── */}
+      {/* Before image — wavy-clipped layer */}
       <div className="absolute inset-0" style={clipStyle}>
         <Image
           src={beforeImg}
           alt={beforeLabel}
-          fill
-          unoptimized
+          fill unoptimized
           className="object-cover"
-          sizes="(max-width:1024px) 100vw, 75vw"
+          sizes="(max-width:768px) 100vw, 75vw"
           priority
         />
         <div className="absolute inset-0 bg-black/25" />
       </div>
 
-      {/* ── SVG electric arc ─────────────────────────────────── */}
+      {/* SVG electric arc */}
       <svg
         className="pointer-events-none absolute inset-0 z-30"
         width="100%" height="100%"
@@ -164,15 +201,17 @@ export default function LightningSplit({
           vectorEffect="non-scaling-stroke" />
       </svg>
 
-      {/* ── Labels ───────────────────────────────────────────── */}
-      <div className="absolute left-5 top-5 z-40 label-uc text-[9px] bg-black/60 backdrop-blur-sm px-3 py-1 border border-white/10 text-white">
+      {/* Labels */}
+      <div className="absolute left-4 top-4 z-40 label-uc text-[9px] bg-black/60 backdrop-blur-sm px-3 py-1 border border-white/10 text-white">
         {beforeLabel}
       </div>
-      <div className="absolute right-5 top-5 z-40 label-uc text-[9px] bg-black/60 backdrop-blur-sm px-3 py-1 border border-white/10 text-white">
+      <div className="absolute right-4 top-4 z-40 label-uc text-[9px] bg-black/60 backdrop-blur-sm px-3 py-1 border border-white/10 text-white">
         {afterLabel}
       </div>
-      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-40 label-uc text-[8px] text-white/40 pointer-events-none whitespace-nowrap">
-        Hover to reveal
+
+      {/* Hint — context-aware */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 label-uc text-[8px] text-white/40 pointer-events-none whitespace-nowrap">
+        {isTouch ? 'Drag to reveal' : 'Hover to reveal'}
       </div>
     </div>
   )

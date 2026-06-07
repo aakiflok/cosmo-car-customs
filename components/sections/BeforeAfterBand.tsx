@@ -63,9 +63,8 @@ export default function BeforeAfterBand() {
           ))}
         </div>
 
-        {/* Panel */}
-        <div className="grid md:grid-cols-[3fr_1fr] gap-8 items-start">
-          {/* Lightning split — no clip-reveal, images must paint immediately */}
+        {/* Panel — stacks on mobile, side-by-side on md+ */}
+        <div className="grid grid-cols-1 md:grid-cols-[3fr_1fr] gap-8 items-start">
           <div className="w-full overflow-hidden">
             <LightningSplit
               key={active}
