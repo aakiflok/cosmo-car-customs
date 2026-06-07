@@ -21,7 +21,7 @@ export default function ServicesGrid() {
             </h2>
           </div>
           <div className="hidden lg:flex flex-col items-end gap-1 pb-2 fade-up delay-3">
-            <span className="num-hero text-white/8 leading-none">05</span>
+            <span className="num-hero text-white/10 leading-none">05</span>
             <p className="label-uc text-[9px] text-white/25">Services available</p>
           </div>
         </div>
@@ -37,7 +37,7 @@ export default function ServicesGrid() {
             >
               <div className="service-card-img">
                 <Image src={s.image} alt="" fill className="object-cover" sizes="20vw" />
-                <div className="absolute inset-0 bg-black/60" />
+                <div className="absolute inset-0 bg-black/40" />
               </div>
               <div className="service-card-content p-5 sm:p-6 lg:p-7">
                 <div className="label-uc mb-6 text-[9px] text-rossa">{s.number}</div>

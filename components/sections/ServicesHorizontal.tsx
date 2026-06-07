@@ -51,7 +51,7 @@ export default function ServicesHorizontal() {
 
       sections.forEach((section) => {
         const img = section.querySelector('.service-img');
-        
+
         gsap.to(section, {
           scrollTrigger: {
             trigger: section,
@@ -96,7 +96,7 @@ export default function ServicesHorizontal() {
                 <div className="label-uc mb-3 text-[9px] text-rossa">{s.number}</div>
                 <h3 className="font-barlow text-[3rem] font-bold uppercase leading-none tracking-tight text-white mb-2">{s.name}</h3>
                 <p className="text-[14px] text-white/60 mb-6">{s.tagline}</p>
-                <div className="flex items-center gap-2 text-white text-[11px] uppercase tracking-widest font-semibold group-hover:text-rossa transition-colors">
+                <div className="flex items-center gap-2 label-uc text-[9px] text-white group-hover:text-rossa transition-colors">
                   Explore <ArrowRight size={14} />
                 </div>
               </div>
@@ -138,7 +138,7 @@ export default function ServicesHorizontal() {
       </div>
 
       {/* Progress Bar */}
-      <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#1f1f1f] hidden md:block z-50">
+      <div className="absolute bottom-0 left-0 w-full h-[3px] bg-hairline hidden md:block z-50">
         <div ref={progressRef} className="h-full bg-rossa origin-left scale-x-0" />
       </div>
     </section>
