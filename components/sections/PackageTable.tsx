@@ -17,12 +17,12 @@ interface PackageTableProps {
 export default function PackageTable({ packages }: PackageTableProps) {
   return (
     <section className="w-full bg-[#0d0d0d] section-pad border-t border-hairline">
-      <div className="mx-auto max-w-[1440px] container-pad">
+      <div className="w-full px-6 sm:px-10 lg:px-16">
 
         <div className="mb-16">
           <span className="livery-line" />
           <div className="label-uc text-[9px] text-white/40 mb-4">Investment</div>
-          <h2 className="display-lg">Choose your package.</h2>
+          <h2 className="display-lg text-white">Choose your package.</h2>
         </div>
 
         <div className="grid gap-px bg-hairline md:grid-cols-3">
@@ -45,7 +45,7 @@ export default function PackageTable({ packages }: PackageTableProps) {
                 <div className="label-uc text-[9px] text-white/40 mb-3">
                   {pkg.tier === 'essential' ? 'Tier 01' : pkg.tier === 'signature' ? 'Tier 02' : 'Tier 03'}
                 </div>
-                <h3 className="display-sm mb-4">{pkg.name}</h3>
+                <h3 className="display-sm text-white mb-4">{pkg.name}</h3>
                 <div className="h-px w-8 bg-rossa" />
               </div>
 
@@ -79,7 +79,7 @@ export default function PackageTable({ packages }: PackageTableProps) {
         <p className="mt-6 text-[12px] text-white/30 text-center">
           Pricing varies by vehicle size and condition.{' '}
           <Link href="/consultation" className="text-white/50 underline underline-offset-2 hover:text-white transition-colors">
-            Get an exact quote →
+            Get an exact quote &rarr;
           </Link>
         </p>
       </div>
