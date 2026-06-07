@@ -103,19 +103,22 @@ export default function HeroBand() {
         {/* Dark gradient background behind SVG */}
         <div className="absolute inset-0 bg-[#0a0a0a]" />
 
-        {/* Cosmo hero SVG — right-aligned, fills the right half */}
+        {/*
+          Cosmo hero SVG — right-aligned, fills the right half.
+          Using a plain <img> (not Next.js <Image>) so the SVG's
+          internal animations (SMIL / CSS) are allowed to run by
+          the browser instead of being frozen as a static bitmap.
+        */}
         <div
           className="absolute inset-y-0 right-0 z-[2] flex items-center justify-end"
           style={{ width: '60%' }}
           aria-hidden="true"
         >
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/herosvg.svg"
             alt=""
-            fill
-            priority
-            className="object-contain object-right"
-            sizes="60vw"
+            className="w-full h-full object-contain object-right"
           />
         </div>
 
