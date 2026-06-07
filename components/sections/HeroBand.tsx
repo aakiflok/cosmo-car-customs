@@ -6,32 +6,73 @@ import { useMagnetic } from '@/hooks/useMagnetic';
 import { BUSINESS } from '@/lib/data';
 
 const STATS = [
-  { value: BUSINESS.googleRating, label: 'Google Rating'       },
-  { value: '200+',                label: 'Five Star Reviews'   },
-  { value: BUSINESS.yearsExperience, label: 'Years Experience' },
-  { value: '500+',                label: 'Vehicles Protected'  },
+  { value: BUSINESS.googleRating,    label: 'Google Rating'     },
+  { value: '200+',                   label: 'Five Star Reviews'  },
+  { value: BUSINESS.yearsExperience, label: 'Years Experience'   },
+  { value: '500+',                   label: 'Vehicles Protected' },
 ];
 
 export default function HeroBand() {
-  const btn1Ref = useRef<HTMLAnchorElement>(null);
-  const btn2Ref = useRef<HTMLAnchorElement>(null);
-  const heroRef = useRef<HTMLElement>(null);
+  const btn1Ref  = useRef<HTMLAnchorElement>(null);
+  const btn2Ref  = useRef<HTMLAnchorElement>(null);
+  const heroRef  = useRef<HTMLElement>(null);
+  const carRef   = useRef<HTMLDivElement>(null);
+  const copyRef  = useRef<HTMLDivElement>(null);
 
   useMagnetic(btn1Ref as React.RefObject<HTMLElement>);
   useMagnetic(btn2Ref as React.RefObject<HTMLElement>);
 
-  // Entry animation — add .in class after first frame
+  // ── Entry animation ──────────────────────────────────────
   useEffect(() => {
     const el = heroRef.current;
     if (!el) return;
     const targets = el.querySelectorAll<HTMLElement>('[data-hero-anim]');
-    // two frames to ensure CSS is painted before transition fires
     const raf = requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        targets.forEach(t => t.classList.add('in'));
-      });
+      requestAnimationFrame(() => targets.forEach(t => t.classList.add('in')));
     });
     return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // ── Scroll parallax ──────────────────────────────────────
+  useEffect(() => {
+    // Honour reduced-motion preference
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const hero = heroRef.current;
+    const car  = carRef.current;
+    const copy = copyRef.current;
+    if (!hero || !car || !copy) return;
+
+    let rafId = 0;
+    let ticking = false;
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      rafId = requestAnimationFrame(() => {
+        const heroH   = hero.offsetHeight;
+        const scrollY = window.scrollY;
+        // progress 0 → 1 over one hero height
+        const progress = Math.min(scrollY / heroH, 1);
+
+        // Car drifts up: max -80px at full scroll-through
+        car.style.transform  = `translateY(${progress * -80}px)`;
+        car.style.willChange = 'transform';
+
+        // Copy fades from 1 → 0.3 in the last 50% of scroll
+        const fade = progress < 0.5 ? 1 : 1 - (progress - 0.5) * 1.4;
+        copy.style.opacity   = String(Math.max(fade, 0.3));
+        copy.style.willChange = 'opacity';
+
+        ticking = false;
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
@@ -40,7 +81,7 @@ export default function HeroBand() {
       className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden bg-[#0a0a0a]"
       aria-label="Hero"
     >
-      {/* Red left bar — wipes down on load */}
+      {/* Red left bar */}
       <div
         data-hero-anim
         className="absolute left-0 top-0 w-[3px] bg-rossa z-20 clip-reveal"
@@ -48,53 +89,34 @@ export default function HeroBand() {
         aria-hidden="true"
       />
 
-      {/* Two-column grid */}
       <div className="relative z-10 grid lg:grid-cols-2 min-h-[100svh] items-center">
 
-        {/* LEFT: Copy */}
-        <div className="flex flex-col justify-center px-8 sm:px-12 lg:px-16 xl:px-24 py-24 lg:py-0">
-
-          {/* Eyebrow */}
-          <div
-            data-hero-anim
-            className="fade-up flex items-center gap-4 mb-8"
-          >
+        {/* LEFT: Copy — fades on scroll exit */}
+        <div
+          ref={copyRef}
+          className="flex flex-col justify-center px-8 sm:px-12 lg:px-16 xl:px-24 py-24 lg:py-0"
+        >
+          <div data-hero-anim className="fade-up flex items-center gap-4 mb-8">
             <span className="block h-[1px] w-10 bg-rossa flex-shrink-0" />
             <span className="label-uc text-[10px] text-white/50 tracking-[0.2em]">
               {BUSINESS.googleRating} Google &middot; {BUSINESS.reviewCount} Reviews &middot; Mississauga
             </span>
           </div>
 
-          {/* Headline */}
-          <h1
-            data-hero-anim
-            className="fade-up delay-1 display-mega text-white leading-[0.92] mb-6"
-          >
+          <h1 data-hero-anim className="fade-up delay-1 display-mega text-white leading-[0.92] mb-6">
             The Detail
             <br />
             <em className="text-white/80">Is Everything.</em>
           </h1>
 
-          {/* Red rule — grows from left */}
-          <div
-            data-hero-anim
-            className="reveal-left delay-2 h-[1px] w-16 bg-rossa mb-8"
-          />
+          <div data-hero-anim className="reveal-left delay-2 h-[1px] w-16 bg-rossa mb-8" />
 
-          {/* Body copy */}
-          <p
-            data-hero-anim
-            className="fade-up delay-3 text-[15px] leading-8 text-white/60 max-w-[440px] mb-10"
-          >
+          <p data-hero-anim className="fade-up delay-3 text-[15px] leading-8 text-white/60 max-w-[440px] mb-10">
             Mississauga&rsquo;s most obsessive detailing studio — ceramic coating,
             PPF, paint correction, and tinting for drivers who demand perfection.
           </p>
 
-          {/* CTAs */}
-          <div
-            data-hero-anim
-            className="fade-up delay-4 flex flex-col gap-3 sm:flex-row sm:items-center mb-16"
-          >
+          <div data-hero-anim className="fade-up delay-4 flex flex-col gap-3 sm:flex-row sm:items-center mb-16">
             <Link ref={btn1Ref} href="/consultation" className="btn-primary magnetic" data-cursor="link">
               <span>Request Consultation</span>
             </Link>
@@ -103,11 +125,7 @@ export default function HeroBand() {
             </Link>
           </div>
 
-          {/* Stats */}
-          <div
-            data-hero-anim
-            className="fade-up delay-5 border-t border-white/10 pt-8 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-8"
-          >
+          <div data-hero-anim className="fade-up delay-5 border-t border-white/10 pt-8 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-8">
             {STATS.map(({ value, label }) => (
               <div key={label}>
                 <div className="text-[2rem] font-bold font-barlow tracking-tight text-white leading-none">{value}</div>
@@ -117,8 +135,9 @@ export default function HeroBand() {
           </div>
         </div>
 
-        {/* RIGHT: Car image — slides in from right */}
+        {/* RIGHT: Car — drifts up on scroll */}
         <div
+          ref={carRef}
           data-hero-anim
           className="reveal-right delay-1 relative w-full h-[60vw] lg:h-full min-h-[300px] lg:min-h-[100svh] flex items-center justify-center overflow-hidden"
         >
