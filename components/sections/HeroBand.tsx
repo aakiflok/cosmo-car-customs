@@ -74,7 +74,7 @@ export default function HeroBand() {
     return () => observer.disconnect();
   }, []);
 
-  // Stat counters (fires when stats grid enters viewport)
+  // Stat counters
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const grid = statsRef.current;
@@ -194,35 +194,63 @@ export default function HeroBand() {
         ref={belowRef}
         className="relative z-10 px-8 sm:px-14 lg:px-20 xl:px-28 pt-16 pb-24"
       >
-        {/* Body copy */}
-        <p
-          data-scroll-reveal
-          className="reveal-up text-[15px] leading-8 text-white/50 max-w-[540px] mb-16"
-        >
-          Mississauga&rsquo;s most obsessive detailing studio — ceramic coating,
-          PPF, paint correction, and tinting for drivers who demand perfection.
-        </p>
+        {/* Detailer GIF + copy — side by side on desktop */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-20">
 
-        {/* Stats */}
-        <div
-          ref={statsRef}
-          className="border-t border-white/10 pt-10 grid grid-cols-2 sm:grid-cols-4 gap-10"
-        >
-          {STATS.map(({ value, label }, i) => (
-            <div
-              key={label}
-              data-scroll-reveal
-              className={`reveal-up ${STAT_DELAYS[i]}`}
-            >
-              <div
-                data-stat-val={value}
-                className="text-[2.5rem] font-bold font-barlow tracking-tight text-white leading-none"
-              >
-                {value}
-              </div>
-              <div className="label-uc mt-2 text-[9px] text-white/35">{label}</div>
+          {/* GIF panel */}
+          <div
+            data-scroll-reveal
+            className="reveal-up relative flex items-center justify-center"
+          >
+            {/* Dark pill background so transparent GIF reads well */}
+            <div className="relative w-full max-w-[520px] mx-auto">
+              <Image
+                src="/download.gif"
+                alt="Cosmo Car Customs detailer applying ceramic coating"
+                width={520}
+                height={400}
+                unoptimized
+                className="w-full h-auto object-contain"
+                style={{ mixBlendMode: 'lighten' }}
+              />
             </div>
-          ))}
+          </div>
+
+          {/* Copy panel */}
+          <div className="flex flex-col justify-center">
+            <div data-scroll-reveal className="reveal-up flex items-center gap-4 mb-6">
+              <span className="block h-[1px] w-10 bg-rossa flex-shrink-0" />
+              <span className="label-uc text-[10px] text-white/40 tracking-[0.2em]">Our Process</span>
+            </div>
+
+            <p data-scroll-reveal className="reveal-up delay-1 text-[15px] leading-8 text-white/55 max-w-[480px] mb-12">
+              Mississauga&rsquo;s most obsessive detailing studio — ceramic coating,
+              PPF, paint correction, and tinting for drivers who demand perfection.
+              Every vehicle treated as if it were our own.
+            </p>
+
+            {/* Stats */}
+            <div
+              ref={statsRef}
+              className="border-t border-white/10 pt-10 grid grid-cols-2 gap-10"
+            >
+              {STATS.map(({ value, label }, i) => (
+                <div
+                  key={label}
+                  data-scroll-reveal
+                  className={`reveal-up ${STAT_DELAYS[i]}`}
+                >
+                  <div
+                    data-stat-val={value}
+                    className="text-[2.5rem] font-bold font-barlow tracking-tight text-white leading-none"
+                  >
+                    {value}
+                  </div>
+                  <div className="label-uc mt-2 text-[9px] text-white/35">{label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
