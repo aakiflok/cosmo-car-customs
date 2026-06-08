@@ -31,12 +31,12 @@ export default function AboutBand() {
       <div className="w-full px-6 sm:px-10 lg:px-16">
         <div className="grid gap-px bg-hairline lg:grid-cols-2">
 
-          {/* Photo — clip-reveal wipes image in from bottom */}
+          {/* Photo */}
           <div className="relative min-h-[340px] sm:min-h-[500px] lg:min-h-[720px] overflow-hidden bg-canvas clip-reveal">
             <div ref={imgRef} className="absolute inset-[-15%] will-change-transform">
               <Image
                 src="https://images.unsplash.com/photo-1616455579100-2ceaa4eb7d48?auto=format&fit=crop&w=1200&q=80"
-                alt="Cosmo Car Customs detailing studio"
+                alt="Cosmo Car Customs detailing studio, Mississauga"
                 fill unoptimized
                 className="object-cover"
                 sizes="(max-width:768px) 100vw, 50vw"
@@ -44,12 +44,11 @@ export default function AboutBand() {
               />
               <div className="absolute inset-0 bg-black/20" />
             </div>
-            {/* Quote overlay — reveal-up so it glides in after the image wipes */}
             <div className="absolute bottom-8 left-8 right-8 bg-black/40 backdrop-blur-sm p-6 md:p-8 border-l-2 border-rossa reveal-up delay-4">
               <p className="font-playfair text-[1.1rem] sm:text-[1.35rem] italic text-white leading-snug">
                 &ldquo;We don&rsquo;t do volume. We do perfection. Every car is treated as though it&rsquo;s the only one in the shop.&rdquo;
               </p>
-              <div className="label-uc mt-4 text-[9px] text-white/50">&mdash; Rajinder, Founder</div>
+              <div className="label-uc mt-4 text-[9px] text-white/50">&mdash; Cosmo Car Customs Team</div>
             </div>
           </div>
 
@@ -63,15 +62,27 @@ export default function AboutBand() {
               </h2>
               <div className="space-y-6">
                 <p className="text-[15px] leading-8 text-white/60 fade-up">
-                  Rajinder has been detailing vehicles since 2020, starting with a deep obsession for paint
-                  condition and working up to full ceramic, PPF, correction, and tinting services.
+                  Cosmo Car Customs has been serving Mississauga and the GTA for {BUSINESS.yearsExperience} years —
+                  built on a deep obsession for paint condition and an uncompromising standard of finish.
+                  From ceramic coating to paint correction and PPF, every service is performed with care and precision.
                 </p>
                 <p className="text-[15px] leading-8 text-white/60 fade-up">
-                  We never rush a job and we never cut corners on product or process. Our facility is designed
-                  for one thing: delivering flawless results.
+                  Our team — Pranav, Ramandeep Singh, and Randeep Singh — treats every vehicle
+                  as if it were their own. We never rush a job and we never cut corners on product or process.
                 </p>
               </div>
             </div>
+
+            {/* Team strip */}
+            <div className="mb-10 flex flex-wrap gap-4">
+              {BUSINESS.team.map((member) => (
+                <div key={member.name} className="border border-hairline px-5 py-3 fade-up">
+                  <div className="text-[13px] font-medium text-white">{member.name}</div>
+                  <div className="label-uc mt-1 text-[9px] text-white/35">{member.role}</div>
+                </div>
+              ))}
+            </div>
+
             <div className="mb-10 grid grid-cols-2 gap-px bg-hairline">
               <Stat value={4.9}  suffix="★" label="Google Rating"    decimals={1} delay={0.3} goldSuffix />
               <Stat value={parseInt(BUSINESS.reviewCount)}     suffix="+" label="Verified Reviews" delay={0.4} />
